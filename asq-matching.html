@@ -54,6 +54,14 @@
           }
       },
 
+      deleteItem: function(from) {
+        var i = this.lookup(from);
+        if ( i >= 0) {
+          console.log("ddd");
+          this.matching.splice(i, 1);
+        } 
+      },
+
       /**
        * Indicates if there is a matching between `from` and `to`.
        * @method isSelected
@@ -73,10 +81,16 @@
       setMatched: function(from, to, isMatched) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatched ) {
+            console.log("-------");
+            console.log(this.lookup(from), this.matching[0]);
+            console.log(from, to, isMatched);
+
             var m = this.getMatchingItem(from);
             m = m == null ? {from: from, value: []} : m;
-            // console.log(m);
+            // console.log(m==null, m.value);
             m.value.push(to);
+            // console.log(m==null, m.value);
+            this.deleteItem(from);
             this.matching.push(m);
           } else {
             var i = this.lookup(from);

@@ -61,18 +61,35 @@
         var t1 = '(to1)';
         var t2 = '(to2)';
         var t3 = '(to3)';
+        var t4 = '(to4)';
 
         m.match(f1, t1);
         m.match(f1, t2);
         m.match(f1, t3);
 
-        // assert.equal(0, m.lookup(f1));
-        // assert.equal(-1, m.lookup(f2));
-        // assert.equal(-1, m.lookup(f3));
+        assert.equal(0, m.lookup(f1));
+        assert.equal(-1, m.lookup(f2));
+        assert.equal(-1, m.lookup(f3));
 
-        // assert.equal(0, m.getMatching(f1).indexOf(t1));
-        // assert.equal(1, m.getMatching(f1).indexOf(t2));
-        // assert.equal(2, m.getMatching(f1).indexOf(t3));
+        assert.equal(0, m.getMatching(f1).indexOf(t1));
+        assert.equal(1, m.getMatching(f1).indexOf(t2));
+        assert.equal(2, m.getMatching(f1).indexOf(t3));
+
+        m.match(f2, t4);
+        m.match(f3, t3);
+        m.match(f3, t4);
+
+        assert.equal(0, m.lookup(f1));
+        assert.equal(1,  m.lookup(f2));
+        assert.equal(2,  m.lookup(f3));
+        assert.equal(0, m.getMatching(f1).indexOf(t1));
+        assert.equal(1, m.getMatching(f1).indexOf(t2));
+        assert.equal(2, m.getMatching(f1).indexOf(t3));
+        assert.equal(0, m.getMatching(f2).indexOf(t4));
+        assert.equal(0, m.getMatching(f3).indexOf(t3));
+        assert.equal(1, m.getMatching(f3).indexOf(t4));
+        assert.isTrue(m.isMatched(f3, t3));
+        assert.isTrue(m.isMatched(f3, t4));
 
        
       });

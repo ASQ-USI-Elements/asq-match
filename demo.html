@@ -32,7 +32,7 @@
 
 <template is="auto-binding">
 
-  <asq-matching id="m"></asq-matching>
+  <asq-matching id="m" mode="multi"></asq-matching>
   <p>hhhh
 
   <script>
@@ -44,6 +44,7 @@
     var t1 = '(to1)';
     var t2 = '(to2)';
     var t3 = '(to3)';
+    var t4 = '(to4)';
 
     m.match(f1, t1);
     
@@ -57,8 +58,57 @@
     // console.log(2 == m.getMatching(f1).indexOf(t3));
 
     console.log(false == m.isMatched(f1, t2));
+    console.log("aaa", m.multi,  m.matching);
+
     m.match(f1, t2);
-    console.log(m.matching);
+    console.log("bbb", m.multi,  m.matching);
+    console.log(0 == m.lookup(f1));
+    console.log(-1 ==  m.lookup(f2));
+    console.log(-1 ==  m.lookup(f3));
+    console.log(0 == m.getMatching(f1).indexOf(t1));
+    console.log(1 == m.getMatching(f1).indexOf(t2));
+    console.log(true == m.isMatched(f1, t2));
+
+    m.match(f1, t3);
+    console.log("bbb", m.multi,  m.matching);
+    console.log(0 == m.lookup(f1));
+    console.log(-1 ==  m.lookup(f2));
+    console.log(-1 ==  m.lookup(f3));
+    console.log(0 == m.getMatching(f1).indexOf(t1));
+    console.log(1 == m.getMatching(f1).indexOf(t2));
+    console.log(2 == m.getMatching(f1).indexOf(t3));
+    console.log(true == m.isMatched(f1, t3));
+
+    m.match(f2, t4);
+    console.log("bbb", m.multi,  m.matching);
+    console.log(0 == m.lookup(f1));
+    console.log(1 ==  m.lookup(f2));
+    console.log(-1 ==  m.lookup(f3));
+    console.log(0 == m.getMatching(f1).indexOf(t1));
+    console.log(1 == m.getMatching(f1).indexOf(t2));
+    console.log(2 == m.getMatching(f1).indexOf(t3));
+
+    console.log(0 == m.getMatching(f2).indexOf(t4));
+    console.log(true == m.isMatched(f1, t3));
+
+
+    m.match(f3, t3);
+    m.match(f3, t4);
+    console.log("bbb", m.multi,  m.matching);
+    console.log(0 == m.lookup(f1));
+    console.log(1 ==  m.lookup(f2));
+    console.log(2 ==  m.lookup(f3));
+    console.log(0 == m.getMatching(f1).indexOf(t1));
+    console.log(1 == m.getMatching(f1).indexOf(t2));
+    console.log(2 == m.getMatching(f1).indexOf(t3));
+
+    console.log(0 == m.getMatching(f2).indexOf(t4));
+
+    console.log(0 == m.getMatching(f3).indexOf(t3));
+    console.log(1 == m.getMatching(f3).indexOf(t4));
+    console.log(true == m.isMatched(f3, t3));
+    console.log(true == m.isMatched(f3, t4));
+
 
     // var f1 = '(from1)';
     // var f2 = '(from2)';
