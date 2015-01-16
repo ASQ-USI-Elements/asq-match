@@ -32,7 +32,7 @@
 
 <template is="auto-binding">
 
-  <asq-matching id="m" mode="multi"></asq-matching>
+  <asq-matching id="m"></asq-matching>
   <p>hhhh
 
   <script>
@@ -58,6 +58,7 @@
 
     console.log(false == m.isMatched(f1, t2));
     m.match(f1, t2);
+    console.log(m.matching);
 
     // var f1 = '(from1)';
     // var f2 = '(from2)';
@@ -71,14 +72,14 @@
     // var func = function(event) {
     //   var from = event.detail.from;
     //   var to = event.detail.to;
-    //   console.log(from === '(from1)');
+    //   console.log(1, from === '(from1)');
 
-    //   console.log(m.matching);
-    //   console.log(m.lookup('(from1)'));
+    //   console.log(2, m.matching);
+    //   console.log(3, m.lookup('(from1)'));
 
-    //   console.log(m.isMatched(event.detail.from, event.detail.to));
-    //   console.log(m.isMatched('(from1)', '(to1)'));
-    //   console.log(m.isMatched('(from1)', '(some_item_not_selected)'));
+    //   console.log(m.isMatched(4, event.detail.from, event.detail.to));
+    //   console.log(m.isMatched(5, '(from1)', '(to1)'));
+    //   console.log(m.isMatched(6, '(from1)', '(some_item_not_selected)'));
       
     //   m.removeEventListener('asq-match', func);
     // }

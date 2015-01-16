@@ -43,8 +43,16 @@
             return null;
           }
         }
+      },
 
-      }
+      getMatchingItem: function(from) {
+        var index = this.lookup(from);
+          if ( index >= 0) {
+            return this.matching[index];
+          } else {
+            return null;
+          }
+      },
 
       /**
        * Indicates if there is a matching between `from` and `to`.
@@ -63,11 +71,11 @@
       },
 
       setMatched: function(from, to, isMatched) {
-        if ( from !== undefined && from !== null ) {
+        if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatched ) {
-            var m = this.getMatching(from);
+            var m = this.getMatchingItem(from);
             m = m == null ? {from: from, value: []} : m;
-            console.log(m);
+            // console.log(m);
             m.value.push(to);
             this.matching.push(m);
           } else {
