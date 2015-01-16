@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="asq" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>asq-matching</title>
+
+  <script src="../../webcomponentsjs/webcomponents.min.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <!-- Step 1: import the element to test -->
+  <link rel="import" href="../asq-matching.html">
+</head>
+<body>
+
+  <!-- You use the document as a place to set up your fixtures. -->
+  <asq-matching></asq-matching>
+
+  <script>
+    var m = document.querySelector('asq-matching');
+    suite('<asq-matching>', function() {
+      test('test default values', function() {
+        assert.equal(m.mode, '1-1');
+        assert.isFalse(m.multi);
+      });
+
+      test('match items', function(done) {
+        var func = function(event) {
+          assert.isTrue(event.detail.isMatched);
+          assert.equal(event.detail.from, '(from)');
+          assert.equal(event.detail.to, '(to)');
+          assert.isTrue(m.isMatched(event.detail.from, event.detail.to));
+          assert.isFalse(m.isMatched('(from)', '(some_item_not_selected)'));
+          m.removeEventListener('asq-match', func);
+          done();
+        }
+        m.addEventListener('asq-match', func);
+        m.match('(from)', '(to)');
+      });
+
+      test('match null', function(done) {
+        var item = m.getMatching();
+        var func = function(event) {
+          assert.isFalse(event.detail.isMatched);
+          assert.equal(m.getMatching(), item);
+          
+          assert.isFalse(m.isMatched(event.detail.from, event.detail.to));
+          m.removeEventListener('asq-match', func);
+          done();
+        }
+        m.addEventListener('asq-match', func);
+        m.match(null, null);
+      });
+
+      test('test lookup', function() {
+        m.clear();
+        var f1 = '(from1)';
+        var f2 = '(from2)';
+        var f3 = '(from3)';
+
+        var t1 = '(to1)';
+        var t2 = '(to2)';
+        var t3 = '(to3)';
+
+        m.match(f1, t1);
+        m.match(f2, t2);
+        m.match(f3, t3);
+
+        assert.equal(0, m.lookup(f1));
+        assert.equal(1, m.lookup(f2));
+        assert.equal(2, m.lookup(f3));
+
+        assert.equal(0, m.getMatching(f1).indexOf(t1));
+        assert.equal(0, m.getMatching(f2).indexOf(t2));
+        assert.equal(0, m.getMatching(f3).indexOf(t3));
+      });
+    });
+  </script>
+
+</body>
+</html>
