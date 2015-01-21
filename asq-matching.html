@@ -28,10 +28,6 @@
        * Retrieves all the matchings 
        * @method getMatching      * @returns Returns the matching(s).
       */
-      // getMatchingfunction(from) {
-      //   return this.matching;
-      // },
-
       getMatching: function(from) {
         if ( from == null ) {
           return this.matching;
@@ -81,15 +77,10 @@
       setMatched: function(from, to, isMatched) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatched ) {
-            console.log("-------");
-            console.log(this.lookup(from), this.matching[0]);
-            console.log(from, to, isMatched);
 
             var m = this.getMatchingItem(from);
             m = m == null ? {from: from, value: []} : m;
-            // console.log(m==null, m.value);
             m.value.push(to);
-            // console.log(m==null, m.value);
             this.deleteItem(from);
             this.matching.push(m);
           } else {
@@ -124,7 +115,6 @@
       lookup: function(from) {
         var index = -1;
         this.matching.forEach(function(e, i) {
-          // console.log('lookup ' + i, e, e.from, from, e.from == from);
           if ( e.from == from ) {
             index = i;
           }
