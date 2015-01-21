@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../asq-element-common/asq-element-common.html">
 
-<polymer-element name="asq-matching" attributes="mode" hidden>
+<polymer-element name="asq-match" attributes="mode" hidden>
 
   <script>
   (function() {
@@ -26,9 +26,9 @@
 
       /**
        * Retrieves all the matchings 
-       * @method getMatching      * @returns Returns the matching(s).
+       * @method getMatches      * @returns Returns the matching(s).
       */
-      getMatching: function(from) {
+      getMatches: function(from) {
         if ( from == null ) {
           return this.matching;
         } else {
@@ -41,7 +41,7 @@
         }
       },
 
-      getMatchingItem: function(from) {
+      getMatchesItem: function(from) {
         var index = this.lookup(from);
           if ( index >= 0) {
             return this.matching[index];
@@ -65,7 +65,7 @@
        * @param {any} to ...
        * @returns Returns true if there is matching between `from` and `to`.
       */
-      isMatched: function(from, to) {
+      isMatch: function(from, to) {
         var i = this.lookup(from);
         if ( i >= 0) {
           return this.matching[i].value.indexOf(to) >= 0;
@@ -74,11 +74,11 @@
         }
       },
 
-      setMatched: function(from, to, isMatched) {
+      setMatched: function(from, to, isMatch) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
-          if ( isMatched ) {
+          if ( isMatch ) {
 
-            var m = this.getMatchingItem(from);
+            var m = this.getMatchesItem(from);
             m = m == null ? {from: from, value: []} : m;
             m.value.push(to);
             this.deleteItem(from);
@@ -90,26 +90,26 @@
               this.matching[i].value.splice(j, 1);
             }
           }
-          this.fire("asq-match", {isMatched: isMatched, from: from, to: to});
+          this.fire("asq-match", {isMatch: isMatch, from: from, to: to});
         }
       },
 
       match: function(from, to) {
         if ( from == null || from == undefined 
           || to == null || to == undefined ) {
-          this.fire("asq-match", {isMatched: false, from: from, to: to});
+          this.fire("asq-match", {isMatch: false, from: from, to: to});
           return;
         }
         if ( this.multi ) {
           this.toggle(from, to);
-        } else if (this.getMatching(from) !== to) {
-          this.setMatched(from, this.getMatching(from), false);
+        } else if (this.getMatches(from) !== to) {
+          this.setMatched(from, this.getMatches(from), false);
           this.setMatched(from, to, true);
         }
       },
 
       toggle: function(from, to) {
-        this.setMatched(from, to, !this.isMatched(from ,to));
+        this.setMatched(from, to, !this.isMatch(from ,to));
       },
 
       lookup: function(from) {
@@ -145,7 +145,7 @@
     }
 
     Polymer.mixin(proto, ASQ.ElementTypeMixin);
-    Polymer('asq-matching', proto);
+    Polymer('asq-match', proto);
   })();
   </script>
 </polymer-element>
