@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../asq-element-common/asq-element-common.html">
+<link rel="import" href="../asq-base/asq-base.html">
 
 <polymer-element name="asq-match" attributes="mode" hidden>
 
@@ -53,7 +53,7 @@
       deleteItem: function(from) {
         var i = this.lookup(from);
         if ( i >= 0) {
-          console.log("ddd");
+          // console.log("ddd");
           this.matching.splice(i, 1);
         } 
       },
