@@ -5,6 +5,14 @@
 
   <script>
   (function() {
+
+    var modes = {
+      SINGLE: "single",
+      O2M: "one_to_many",
+      M2O: "many_to_one",
+      M2M: 'many_to_many'
+    };
+
     var proto = {
       /**
        * Des...
@@ -14,6 +22,9 @@
        * @default "1-1"
        */
       mode: "1-1",
+
+      modeState: modes.SINGLE,
+
 
       ready: function() {
         this.modeChanged();
@@ -26,7 +37,8 @@
 
       /**
        * Retrieves all the matchings 
-       * @method getMatches      * @returns Returns the matching(s).
+       * @method getMatches      
+       * @returns Returns the matching(s).
       */
       getMatches: function(from) {
         if ( from == null ) {
@@ -34,7 +46,7 @@
         } else {
           var index = this.lookup(from);
           if ( index >= 0) {
-            return this.multi ? this.matching[index].value : this.matching[index].value[0];
+            return this.matching[index].value
           } else {
             return null;
           }
@@ -68,7 +80,7 @@
       isMatch: function(from, to) {
         var i = this.lookup(from);
         if ( i >= 0) {
-          return this.matching[i].value.indexOf(to) >= 0;
+          return this.matching[i].value.indexOf(to) >= 0 ? true : false;
         } else {
           return false;
         }
@@ -77,7 +89,6 @@
       setMatched: function(from, to, isMatch) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatch ) {
-
             var m = this.getMatchesItem(from);
             m = m == null ? {from: from, value: []} : m;
             m.value.push(to);
@@ -86,8 +97,12 @@
           } else {
             var i = this.lookup(from);
             if (i >= 0) {
-              var j = this.matching[i].value.indexOf(to);
-              this.matching[i].value.splice(j, 1);
+              if ( Array.isArray(to) ) {
+                console.log('isArray');
+              } else {
+                var j = this.matching[i].value.indexOf(to);
+                this.matching[i].value.splice(j, 1);
+              }
             }
           }
           this.fire("asq-match", {isMatch: isMatch, from: from, to: to});
@@ -95,17 +110,51 @@
       },
 
       match: function(from, to) {
-        if ( from == null || from == undefined 
-          || to == null || to == undefined ) {
-          this.fire("asq-match", {isMatch: false, from: from, to: to});
+        if ( from == null || from == undefined || to == null || to == undefined ) {
           return;
         }
-        if ( this.multi ) {
-          this.toggle(from, to);
-        } else if (this.getMatches(from) !== to) {
-          this.setMatched(from, this.getMatches(from), false);
-          this.setMatched(from, to, true);
+        if (this.isMatch(from, to)) return;
+
+        if ( this.modeState == modes.O2M  ) {
+          if ( this.count(to) > 0 ) {
+            var xs = this.getFromsBy(to);
+            xs.forEach(function(e){ this.setMatched(e, to, false);}, this);
+          } 
+        } else if (this.modeState == modes.M2O){
+          if (this.existMatchesFrom(from)) {
+            this.setMatched(from, this.getMatches(from)[0], false);
+          } 
+        } else if ( this.modeState == modes.SINGLE ) {
+          if (this.getMatches(from) ) {
+            this.setMatched(from, this.getMatches(from)[0], false);
+          }
         }
+
+        this.toggle(from, to);  
+      },
+
+      getFromsBy: function(to) {
+        var xs = [];
+        this.matching.forEach(function(e) {
+          e.value.forEach(function(t) {
+            if ( to == t ) {
+              xs.push(e.from);
+            }
+          })
+        })
+        return xs;
+      },
+
+      count: function(to) {
+        var count = 0;
+        this.matching.forEach(function(e) {
+          e.value.forEach(function(f) {
+            if ( f == to ) {
+              count++;
+            }
+          })
+        });
+        return count;
       },
 
       toggle: function(from, to) {
@@ -122,23 +171,32 @@
         return index;
       },
 
+      existMatchesFrom: function(from) {
+        return this.lookup(from) >= 0 ? true : false;
+      },
+
       modeChanged: function() {
         switch(this.mode) {
           case "1-1":
           case "single":
-            this.multi = false;
+            this.modeState = modes.SINGLE;
             break;
           case "1-n":
-          case "n-1":
           case "1-m":
+            this.modeState = modes.O2M;
+            break;
+          case "n-1":
           case "m-1":
+            this.modeState = modes.M2O;
+            break;
           case "m-n":
           case "n-m":
           case "multi":
-            this.multi = true;
+            this.modeState = modes.M2M;
             break;
           default:
-            this.multi = false;
+            this.modeState = SINGLE;
+            this.mode = '1-1';
         } 
       }
 
