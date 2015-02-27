@@ -14,14 +14,14 @@
 <body>
 
   <!-- You use the document as a place to set up your fixtures. -->
-  <asq-match></asq-match>
+  <asq-match mode="1-m"></asq-match>
 
   <script>
     var m = document.querySelector('asq-match');
     suite('<asq-matching>', function() {
       test('test default values', function() {
-        assert.equal(m.mode, '1-1');
-        assert.equal(m.modeState, 'single');
+        assert.equal(m.mode, '1-m');
+        assert.equal(m.modeState, 'one_to_many');
       });
 
       test('match items', function(done) {
@@ -44,7 +44,7 @@
         assert.equal(m.getMatches(), item);
       });
 
-      test('test lookup', function() {
+      test('test ', function() {
         m.clear();
         var f1 = '(from1)';
         var f2 = '(from2)';
@@ -55,17 +55,18 @@
         var t3 = '(to3)';
 
         m.match(f1, t1);
-        m.match(f2, t2);
-        m.match(f3, t3);
-
-        assert.equal(0, m.lookup(f1));
-        assert.equal(1, m.lookup(f2));
-        assert.equal(2, m.lookup(f3));
-
+        m.match(f1, t2);
+        assert.equal(2, m.getMatches(f1).length);
         assert.equal(0, m.getMatches(f1).indexOf(t1));
-        assert.equal(0, m.getMatches(f2).indexOf(t2));
-        assert.equal(0, m.getMatches(f3).indexOf(t3));
+        assert.equal(1, m.getMatches(f1).indexOf(t2));
 
+        m.match(f2, t1);
+        assert.equal(1, m.getMatches(f1).length);
+        assert.equal(-1, m.getMatches(f1).indexOf(t1));
+        assert.equal(0, m.getMatches(f1).indexOf(t2));
+        assert.equal(1, m.getMatches(f2).length);
+        assert.equal(0, m.getMatches(f2).indexOf(t1));
+        
         
       });
     });

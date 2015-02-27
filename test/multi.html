@@ -21,7 +21,7 @@
     suite('<asq-matching>', function() {
       test('test default values', function() {
         assert.equal(m.mode, 'multi');
-        assert.isTrue(m.multi);
+        assert.equal(m.modeState, 'many_to_many');
       });
 
       test('match items', function(done) {
@@ -38,18 +38,10 @@
         m.match('(from)', '(to)');
       });
 
-      test('match null', function(done) {
+      test('match null', function() {
         var item = m.getMatches();
-        var func = function(event) {
-          assert.isFalse(event.detail.isMatch);
-          assert.equal(m.getMatches(), item);
-          
-          assert.isFalse(m.isMatch(event.detail.from, event.detail.to));
-          m.removeEventListener('asq-match', func);
-          done();
-        }
-        m.addEventListener('asq-match', func);
         m.match(null, null);
+        assert.equal(m.getMatches(), item);
       });
 
       test('test many', function() {
