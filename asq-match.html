@@ -53,15 +53,6 @@
         }
       },
 
-      getMatchesItem: function(from) {
-        var index = this.lookup(from);
-          if ( index >= 0) {
-            return this.matching[index];
-          } else {
-            return null;
-          }
-      },
-
       deleteItem: function(from) {
         var i = this.lookup(from);
         if ( i >= 0) {
@@ -88,8 +79,8 @@
       setMatched: function(from, to, isMatch) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatch ) {
-            var m = this.getMatchesItem(from);
-            m = m == null ? {from: from, value: []} : m;
+            var index = this.lookup(from);
+            var m = index >= 0 ? this.matching[index] : {from: from, value: []};
             m.value.push(to);
             this.deleteItem(from);
             this.matching.push(m);
@@ -112,25 +103,31 @@
         if ( from == null || from == undefined || to == null || to == undefined ) {
           return;
         }
-        // if (this.isMatch(from, to)) return;
 
         if ( this.modeState == modes.O2M  ) {
-          if ( this.count(to) > 0 ) {
+          if ( !this.isMatch(from, to) && this.count(to) > 0) {
             var xs = this.getFromsBy(to);
             xs.forEach(function(e){ this.setMatched(e, to, false);}, this);
           } 
+
         } else if (this.modeState == modes.M2O){
-          if (this.existMatchesFrom(from)) {
+          if (this.existMatchesFrom(from) && !this.isMatch(from, to)) {
             this.setMatched(from, this.getMatches(from)[0], false);
           } 
+
         } else if ( this.modeState == modes.SINGLE ) {
-          if (this.getMatches(from) ) {
-            this.setMatched(from, this.getMatches(from)[0], false);
+          if ( ! this.isMatch(from, to) ) {
+            if (this.existMatchesFrom(from) ) {
+                this.setMatched(from, this.getMatches(from)[0], false);
+            }
+            var fs = this.getFromsBy(to);
+            if (fs.length > 0) {
+              this.toggle(fs[0], to);
+            }
           }
         }
-
-
         this.toggle(from, to); 
+        
       },
 
       /**
@@ -183,15 +180,12 @@
       },
 
       existMatchesFrom: function(from) {
-        return this.lookup(from) >= 0 ? true : false;
+        if ( this.lookup(from) < 0 ) return false;
+        return this.getMatches(from).length > 0 ? true : false;
       },
 
       existsValue: function(to) {
         return this.count(to) > 0 ? true : false;
-      },
-
-      existsKey: function(from) {
-        return this.lookup(from) >= 0 ? true : false;
       },
 
       modeChanged: function() {

@@ -30,9 +30,9 @@
 </head>
 <body>
 
-<template is="auto-binding">
+<!-- <template is="auto-binding"> -->
 
-  <asq-match id="m" mode="m-1"></asq-match>
+  <asq-match id="m" mode="1-1"></asq-match>
   <p>hhhh
 
   <script>
@@ -45,20 +45,24 @@
     var t2 = '(to2)';
     var t3 = '(to3)';
 
+    var m = document.querySelector('#m');
+
 
     // console.log(m.isMatch(f1, t1));
-    m.match(f1, t1);
-    var x = m.getMatches(f1).length;
-    console.log(f1, x, m.getMatches(f1));
+    // m.match(f1, t1);
+    // var x = m.getMatches(f1).length;
+    // console.log(f1, x, m.getMatches(f1));
 
 
-    m.match(f1, t2);
-    x = m.getMatches(f1).length;
-    console.log(f1, x, m.getMatches(f1), m.getMatches());
+    // m.match(f1, t2);
+    // x = m.getMatches(f1).length;
+    // console.log(f1, x, m.getMatches(f1), m.getMatches());
     // m.match(f1, t2);
     // m.match(f2, t1);
 
-    
+    document.addEventListener('asq-match', function(e) {
+        console.log('hi', e.detail.isMatch, e.detail.from, e.detail.to);
+    });
 
 
     // m.match(f1, t1);
@@ -187,7 +191,7 @@
   </script>
 
 
-</template>
+<!-- </template> -->
 
 </body>
 </html>
