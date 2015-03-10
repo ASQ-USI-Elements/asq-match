@@ -65,7 +65,6 @@
       deleteItem: function(from) {
         var i = this.lookup(from);
         if ( i >= 0) {
-          // console.log("ddd");
           this.matching.splice(i, 1);
         } 
       },
@@ -113,7 +112,7 @@
         if ( from == null || from == undefined || to == null || to == undefined ) {
           return;
         }
-        if (this.isMatch(from, to)) return;
+        // if (this.isMatch(from, to)) return;
 
         if ( this.modeState == modes.O2M  ) {
           if ( this.count(to) > 0 ) {
@@ -130,9 +129,16 @@
           }
         }
 
-        this.toggle(from, to);  
+
+        this.toggle(from, to); 
       },
 
+      /**
+       * 
+       * @method getFromsBy
+       * @param  {[type]} to [description]
+       * @return {[type]}    [description]
+       */
       getFromsBy: function(to) {
         var xs = [];
         this.matching.forEach(function(e) {
@@ -145,6 +151,11 @@
         return xs;
       },
 
+      /**
+       * 
+       * @param  {[type]} to [description]
+       * @return {[type]}    [description]
+       */
       count: function(to) {
         var count = 0;
         this.matching.forEach(function(e) {
@@ -172,6 +183,14 @@
       },
 
       existMatchesFrom: function(from) {
+        return this.lookup(from) >= 0 ? true : false;
+      },
+
+      existsValue: function(to) {
+        return this.count(to) > 0 ? true : false;
+      },
+
+      existsKey: function(from) {
         return this.lookup(from) >= 0 ? true : false;
       },
 
