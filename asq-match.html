@@ -21,18 +21,22 @@
        * @type string
        * @default "1-1"
        */
-      mode: "1-1",
+      mode: '',
 
       modeState: modes.SINGLE,
 
+      created: function() {
+        this.mode = '1-1';
+      },
+
 
       ready: function() {
-        this.modeChanged();
+        
         this.clear();
       },
 
       clear: function() {
-        this.matching = [];
+        this.matches = [];
       },
 
       /**
@@ -42,11 +46,11 @@
       */
       getMatches: function(from) {
         if ( from == null ) {
-          return this.matching;
+          return this.matches;
         } else {
           var index = this.lookup(from);
           if ( index >= 0) {
-            return this.matching[index].value
+            return this.matches[index].value
           } else {
             return null;
           }
@@ -56,7 +60,7 @@
       deleteItem: function(from) {
         var i = this.lookup(from);
         if ( i >= 0) {
-          this.matching.splice(i, 1);
+          this.matches.splice(i, 1);
         } 
       },
 
@@ -70,7 +74,7 @@
       isMatch: function(from, to) {
         var i = this.lookup(from);
         if ( i >= 0) {
-          return this.matching[i].value.indexOf(to) >= 0 ? true : false;
+          return this.matches[i].value.indexOf(to) >= 0 ? true : false;
         } else {
           return false;
         }
@@ -80,18 +84,19 @@
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatch ) {
             var index = this.lookup(from);
-            var m = index >= 0 ? this.matching[index] : {from: from, value: []};
+            var m = index >= 0 ? this.matches[index] : {from: from, value: []};
             m.value.push(to);
+            // delete old item first then add a new one
             this.deleteItem(from);
-            this.matching.push(m);
+            this.matches.push(m);
           } else {
             var i = this.lookup(from);
             if (i >= 0) {
               if ( Array.isArray(to) ) {
                 console.log('isArray');
               } else {
-                var j = this.matching[i].value.indexOf(to);
-                this.matching[i].value.splice(j, 1);
+                var j = this.matches[i].value.indexOf(to);
+                this.matches[i].value.splice(j, 1);
               }
             }
           }
@@ -106,7 +111,7 @@
 
         if ( this.modeState == modes.O2M  ) {
           if ( !this.isMatch(from, to) && this.count(to) > 0) {
-            var xs = this.getFromsBy(to);
+            var xs = this.getFromsByTo(to);
             xs.forEach(function(e){ this.setMatched(e, to, false);}, this);
           } 
 
@@ -120,7 +125,7 @@
             if (this.existMatchesFrom(from) ) {
                 this.setMatched(from, this.getMatches(from)[0], false);
             }
-            var fs = this.getFromsBy(to);
+            var fs = this.getFromsByTo(to);
             if (fs.length > 0) {
               this.toggle(fs[0], to);
             }
@@ -132,13 +137,13 @@
 
       /**
        * 
-       * @method getFromsBy
+       * @method getFromsByTo
        * @param  {[type]} to [description]
        * @return {[type]}    [description]
        */
-      getFromsBy: function(to) {
+      getFromsByTo: function(to) {
         var xs = [];
-        this.matching.forEach(function(e) {
+        this.matches.forEach(function(e) {
           e.value.forEach(function(t) {
             if ( to == t ) {
               xs.push(e.from);
@@ -155,7 +160,7 @@
        */
       count: function(to) {
         var count = 0;
-        this.matching.forEach(function(e) {
+        this.matches.forEach(function(e) {
           e.value.forEach(function(f) {
             if ( f == to ) {
               count++;
@@ -171,7 +176,7 @@
 
       lookup: function(from) {
         var index = -1;
-        this.matching.forEach(function(e, i) {
+        this.matches.forEach(function(e, i) {
           if ( e.from == from ) {
             index = i;
           }
