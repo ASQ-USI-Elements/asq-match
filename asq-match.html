@@ -1,11 +1,29 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../asq-base/asq-base.html">
 
-<polymer-element name="asq-match" attributes="mode" hidden>
+<!--
+`asq-match` is a hidden element without UI, which could store matching 
+relationship between two sets. The relationships supported are 
+`One to One`, `One to Many`, `Many to One` and `Many to Many`.
 
+##### Example
+It should be put it inside an element.
+
+    <asq-match mode="1-m"></asq-match>
+
+
+@element asq-match
+@group ASQ Elements
+@blurb Element tore matching relationships.
+@homepage http://github.com/ASQ-USI/asq-match
+-->
+<polymer-element name="asq-match" attributes="mode" hidden>
   <script>
   (function() {
 
+    /**
+     * All possible relationship modes.
+     */
     var modes = {
       SINGLE: "single",
       O2M: "one_to_many",
@@ -14,35 +32,69 @@
     };
 
     var proto = {
+
       /**
-       * Des...
-       *
-       * @attribute realtion
-       * @type string
-       * @default "1-1"
+       * The relationsip mode.
+       * @attribute mode
+       * @type '1-1' | '1-m' | 'm-1' | 'm-m' 
+       * @default '1-1'
        */
       mode: '',
 
+      /**
+       * Represents the mode by modes enum attribute.
+       
+              modes = 
+              {
+                SINGLE: "single",
+                O2M: "one_to_many",
+                M2O: "many_to_one",
+                M2M: 'many_to_many'
+              }
+       * 
+       * @attribute modeState
+       * @type {string}
+       * @default modes.SINGLE
+       */
       modeState: modes.SINGLE,
+
+      /**
+       * The array that stores the matches. A match is
+       * defined as follows:
+      
+            {
+              from: <any>,
+              value: <array>
+            }
+
+       * @attribute matches
+       * @type {Array}
+       * @default []
+       */
+      matches: [],
 
       created: function() {
         this.mode = '1-1';
       },
-
 
       ready: function() {
         
         this.clear();
       },
 
+      /**
+       * Delete all matches.
+       * @method clear
+       */
       clear: function() {
         this.matches = [];
       },
 
       /**
-       * Retrieves all the matchings 
-       * @method getMatches      
-       * @returns Returns the matching(s).
+       * Retrieves all the matches. Or retrieves the matches of given `key`.
+       * @method getMatches
+       * @param {any} from .     
+       * @returns {Object} Returns the matches. Return null if no matches.
       */
       getMatches: function(from) {
         if ( from == null ) {
@@ -57,6 +109,12 @@
         }
       },
 
+      /**
+       * Delete all the matches of a given `key` and also delete itself from
+       * `this.matches`.
+       * @method deleteItem
+       * @param  {any} from .
+       */
       deleteItem: function(from) {
         var i = this.lookup(from);
         if ( i >= 0) {
@@ -66,9 +124,9 @@
 
       /**
        * Indicates if there is a matching between `from` and `to`.
-       * @method isSelected
-       * @param {any} from ...
-       * @param {any} to ...
+       * @method isMatch
+       * @param {any} from .
+       * @param {any} to .
        * @returns Returns true if there is matching between `from` and `to`.
       */
       isMatch: function(from, to) {
@@ -80,6 +138,25 @@
         }
       },
 
+      /**
+       * Fired after the a new match is set up or a match is broken.
+       *
+       * @event asq-match
+       * @param detail
+          
+          {
+            isMatch: <if the match is set up, ture; otherwise, false>
+            from: <from>
+            to: <to>    
+          }
+
+       */
+      /*
+       * The function that actually does the `match` and `dismatch` things.
+       * If the param `isMatch` is ture, then a match between `from` and `to`
+       * will be set up, otherwise `from` and `to` will be dismatched. Finally,
+       * an event `asq-match` will be fired.
+       */
       setMatched: function(from, to, isMatch) {
         if ( from !== undefined && from !== null && to !== undefined && to !== null) {
           if ( isMatch ) {
@@ -104,13 +181,29 @@
         }
       },
 
+      /**
+       * The main interface. Toggle a match between `from` and `to`.
+       * <br>
+       * <b>NOTE</b> Accoding to the `mode`, some matches may be deleted
+       * after toggle new match.
+       * ## Example
+       * In `1-1` mode, suppose the `matches` is empty at the begining.
+        
+          this.$.match(k1, v1);  // match `k1 <-> v1` would be set up.
+          this.$.match(k2, v1);  // match `k1 <-> v1` would be broken up and then
+                                 // match `k2 <-> v1` would be set up.
+
+       * @method match
+       * @param  {any} from The key.
+       * @param  {any} to   The value.
+       */
       match: function(from, to) {
         if ( from == null || from == undefined || to == null || to == undefined ) {
           return;
         }
 
         if ( this.modeState == modes.O2M  ) {
-          if ( !this.isMatch(from, to) && this.count(to) > 0) {
+          if ( !this.isMatch(from, to) && this.countTo(to) > 0) {
             var xs = this.getFromsByTo(to);
             xs.forEach(function(e){ this.setMatched(e, to, false);}, this);
           } 
@@ -136,10 +229,10 @@
       },
 
       /**
-       * 
+       * Return all th `froms` or `keys` that are matched with given `to` or `value`.
        * @method getFromsByTo
-       * @param  {[type]} to [description]
-       * @return {[type]}    [description]
+       * @param  {any} to The `to` or `value`.
+       * @return {array}  All th `froms` or `keys` that are matched with `to`.
        */
       getFromsByTo: function(to) {
         var xs = [];
@@ -154,11 +247,12 @@
       },
 
       /**
-       * 
-       * @param  {[type]} to [description]
-       * @return {[type]}    [description]
+       * Count how many `to`s are there in matches.
+       * @method countTo
+       * @param  {any} to 
+       * @return {int}    
        */
-      count: function(to) {
+      countTo: function(to) {
         var count = 0;
         this.matches.forEach(function(e) {
           e.value.forEach(function(f) {
@@ -170,10 +264,19 @@
         return count;
       },
 
+      /*
+       * Simply toggle the match between `from` and `to` without any other checkings.
+       */
       toggle: function(from, to) {
         this.setMatched(from, to, !this.isMatch(from ,to));
       },
 
+      /**
+       * Find the index of the given `from` or `key`.
+       * @method lookup
+       * @param  {any} from 
+       * @return {int} The index. In case of not found, return -1.
+       */
       lookup: function(from) {
         var index = -1;
         this.matches.forEach(function(e, i) {
@@ -184,13 +287,25 @@
         return index;
       },
 
+      /**
+       * Check if there are mathces for `from`.
+       * @method existMatchesFrom
+       * @param  {any} from 
+       * @return {boolean} 
+       */
       existMatchesFrom: function(from) {
         if ( this.lookup(from) < 0 ) return false;
         return this.getMatches(from).length > 0 ? true : false;
       },
 
+      /**
+       * A wrapper function of `countTo`. Check if the given `to` or `value` is existed.
+       * @method existsValue
+       * @param  {any} to 
+       * @return {boolean} 
+       */
       existsValue: function(to) {
-        return this.count(to) > 0 ? true : false;
+        return this.countTo(to) > 0 ? true : false;
       },
 
       modeChanged: function() {
@@ -209,6 +324,8 @@
             break;
           case "m-n":
           case "n-m":
+          case "n-n":
+          case "m-m":
           case "multi":
             this.modeState = modes.M2M;
             break;
@@ -216,11 +333,11 @@
             this.modeState = SINGLE;
             this.mode = '1-1';
         } 
-      }
+      },
 
     }
 
-    Polymer.mixin(proto, ASQ.ElementTypeMixin);
+    ASQ.asqify(proto);
     Polymer('asq-match', proto);
   })();
   </script>
