@@ -14,36 +14,50 @@
 <body>
 
   <!-- You use the document as a place to set up your fixtures. -->
-  <asq-match mode="multi"></asq-match>
+  <asq-match id="m" mode="multi"></asq-match>
+  <asq-match id="n1" mode="m-m"></asq-match>
+  <asq-match id="n2" mode="n-n"></asq-match>
+  <asq-match id="n3" mode="n-m"></asq-match>
+  <asq-match id="n4" mode="m-n"></asq-match>
 
   <script>
-    var m = document.querySelector('asq-match');
+    var m = document.querySelector('#m');
+    var n1 = document.querySelector('#n1');
+    var n2 = document.querySelector('#n2');
+    var n3 = document.querySelector('#n3');
+    var n4 = document.querySelector('#n4');
+    
+    var modes = {
+      SINGLE: "single",
+      O2M: "one_to_many",
+      M2O: "many_to_one",
+      M2M: 'many_to_many'
+    };
+
     suite('<asq-matching>', function() {
       test('test default values', function() {
         assert.equal(m.mode, 'multi');
-        assert.equal(m.modeState, 'many_to_many');
+        assert.equal(m.modeState, modes.M2M);
+        assert.equal(m.matches.length, 0);
+
+        assert.equal(n1.mode, 'm-m');
+        assert.equal(n1.modeState, modes.M2M);
+        assert.equal(n1.matches.length, 0);
+
+        assert.equal(n2.mode, 'n-n');
+        assert.equal(n2.modeState, modes.M2M);
+        assert.equal(n2.matches.length, 0);
+
+        assert.equal(n3.mode, 'n-m');
+        assert.equal(n3.modeState, modes.M2M);
+        assert.equal(n3.matches.length, 0);
+
+        assert.equal(n4.mode, 'm-n');
+        assert.equal(n4.modeState, modes.M2M);
+        assert.equal(n4.matches.length, 0);
       });
 
-      test('match items', function(done) {
-        var func = function(event) {
-          assert.isTrue(event.detail.isMatch);
-          assert.equal(event.detail.from, '(from)');
-          assert.equal(event.detail.to, '(to)');
-          assert.isTrue(m.isMatch(event.detail.from, event.detail.to));
-          assert.isFalse(m.isMatch('(from)', '(some_item_not_selected)'));
-          m.removeEventListener('asq-match', func);
-          done();
-        }
-        m.addEventListener('asq-match', func);
-        m.match('(from)', '(to)');
-      });
-
-      test('match null', function() {
-        var item = m.getMatches();
-        m.match(null, null);
-        assert.equal(m.getMatches(), item);
-      });
-
+      
       test('test many', function() {
         m.clear();
         var f1 = '(from1)';

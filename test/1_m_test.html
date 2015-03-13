@@ -14,37 +14,33 @@
 <body>
 
   <!-- You use the document as a place to set up your fixtures. -->
-  <asq-match mode="1-m"></asq-match>
+  <asq-match id="m" mode="1-m"></asq-match>
+  <asq-match id="n" mode="1-n"></asq-match>
 
   <script>
-    var m = document.querySelector('asq-match');
+    var m = document.querySelector('#m');
+    var n = document.querySelector('#n');
+
+    var modes = {
+      SINGLE: "single",
+      O2M: "one_to_many",
+      M2O: "many_to_one",
+      M2M: 'many_to_many'
+    };
+
     suite('<asq-matching>', function() {
       test('test default values', function() {
         assert.equal(m.mode, '1-m');
-        assert.equal(m.modeState, 'one_to_many');
+        assert.equal(m.modeState, modes.O2M);
+        assert.equal(m.matches.length, 0);
+
+        assert.equal(n.mode, '1-n');
+        assert.equal(n.modeState, modes.O2M);
+        assert.equal(n.matches.length, 0);
+
       });
 
-      test('match items', function(done) {
-        var func = function(event) {
-          assert.isTrue(event.detail.isMatch);
-          assert.equal(event.detail.from, '(from)');
-          assert.equal(event.detail.to, '(to)');
-          assert.isTrue(m.isMatch(event.detail.from, event.detail.to));
-          assert.isFalse(m.isMatch('(from)', '(some_item_not_selected)'));
-          m.removeEventListener('asq-match', func);
-          done();
-        }
-        m.addEventListener('asq-match', func);
-        m.match('(from)', '(to)');
-      });
-
-      test('match null', function() {
-        var item = m.getMatches();
-        m.match(null, null);
-        assert.equal(m.getMatches(), item);
-      });
-
-      test('test ', function() {
+      test('test 1-m', function() {
         m.clear();
         var f1 = '(from1)';
         var f2 = '(from2)';
@@ -57,17 +53,23 @@
         m.match(f1, t1);
         m.match(f1, t2);
         assert.equal(2, m.getMatches(f1).length);
-        assert.equal(0, m.getMatches(f1).indexOf(t1));
-        assert.equal(1, m.getMatches(f1).indexOf(t2));
+        assert.isTrue(m.isMatch(f1, t1));
+        assert.isTrue(m.isMatch(f1, t2));
 
         m.match(f2, t1);
         assert.equal(1, m.getMatches(f1).length);
-        assert.equal(-1, m.getMatches(f1).indexOf(t1));
-        assert.equal(0, m.getMatches(f1).indexOf(t2));
+        assert.isFalse(m.isMatch(f1, t1));
+        assert.isTrue(m.isMatch(f1, t2));
+
         assert.equal(1, m.getMatches(f2).length);
-        assert.equal(0, m.getMatches(f2).indexOf(t1));
-        
-        
+        assert.isTrue(m.isMatch(f2, t1));
+
+        m.match(f2, t3);
+        assert.equal(2, m.getMatches(f2).length);
+        assert.isTrue(m.isMatch(f2, t1));
+        assert.isTrue(m.isMatch(f2, t3));    
+
+        assert.isTrue(m.isMatch(f1, t2));    
       });
     });
   </script>

@@ -14,14 +14,216 @@
 <body>
 
   <!-- You use the document as a place to set up your fixtures. -->
-  <asq-match></asq-match>
+  <asq-match id="m"></asq-match>
+  <asq-match id="n" mode='multi'></asq-match>
 
   <script>
-    var m = document.querySelector('asq-match');
+    var m = document.querySelector('#m');
+    var n = document.querySelector('#n');
+
+    var f1 = '(from1)';
+    var f2 = '(from2)';
+    var f3 = '(from3)';
+
+    var t1 = '(to1)';
+    var t2 = '(to2)';
+    var t3 = '(to3)';
+
+    var k = {
+      from: f1,
+      value: [t1]
+    }
+    var k2 = {
+      from: f2,
+      value: [t3]
+    }
+    var k3 = {
+      from: f1,
+      value: [t3]
+    }
+
+    var modes = {
+      SINGLE: "single",
+      O2M: "one_to_many",
+      M2O: "many_to_one",
+      M2M: 'many_to_many'
+    };
+
     suite('<asq-matching>', function() {
       test('test default values', function() {
         assert.equal(m.mode, '1-1');
-        assert.equal(m.modeState, 'single');
+        assert.equal(m.modeState, modes.SINGLE);
+        assert.equal(m.matches.length, 0);
+      });
+
+      test('test isMatch', function() {
+        m.matches.push(k);
+
+        assert.isTrue(m.isMatch(f1, t1));
+        assert.isFalse(m.isMatch(f1, t2));
+        assert.isFalse(m.isMatch(f2, t1));
+        assert.isFalse(m.isMatch(f2, t2));
+      });
+
+      test('test deleteItem', function() {
+        m.clear();
+        m.matches.push(k);
+        m.deleteItem(f1);
+
+        assert.isFalse(m.isMatch(f1, t1));
+        assert.equal(m.matches.length, 0);
+      });
+
+      test('test lookup', function() {
+        m.clear();
+        
+        assert.equal(m.lookup(f1), -1);
+        assert.equal(m.lookup(f2), -1);
+        assert.equal(m.lookup(f3), -1);
+
+        m.matches.push(k);
+        m.matches.push(k2);
+
+        
+        assert.equal(m.lookup(f1), 0);
+        assert.equal(m.lookup(f2), 1);
+        assert.equal(m.lookup(f3), -1);
+      });
+
+      test('test existMatchesFrom', function() {
+        m.clear();
+        
+        assert.isFalse(m.existMatchesFrom(f1));
+        assert.isFalse(m.existMatchesFrom(f2));
+        assert.isFalse(m.existMatchesFrom(f3));
+
+        m.matches.push(k);
+        m.matches.push(k2);
+
+        assert.isTrue(m.existMatchesFrom(f1));
+        assert.isTrue(m.existMatchesFrom(f2));
+        assert.isFalse(m.existMatchesFrom(f3));
+      });
+
+      // var k = {
+      //   from: f1,
+      //   value: [t1]
+      // }
+      // var k2 = {
+      //   from: f2,
+      //   value: [t3]
+      // }
+      // var k3 = {
+      //   from: f1,
+      //   value: [t3]
+      // }
+
+      test('test countTo ', function() {
+        n.clear();
+        
+        assert.equal(n.countTo(t1), 0);
+        assert.equal(n.countTo(t2), 0);
+        assert.equal(n.countTo(t3), 0);
+
+        n.matches.push(k);
+        n.matches.push(k2);
+        n.matches.push(k3);
+
+        assert.equal(n.countTo(t1), 1);
+        assert.equal(n.countTo(t2), 0);
+        assert.equal(n.countTo(t3), 2);
+      });
+
+      test('test existsValue ', function() {
+        n.clear();
+        
+        assert.isFalse(n.existsValue(t1));
+        assert.isFalse(n.existsValue(t2));
+        assert.isFalse(n.existsValue(t3));
+
+        n.matches.push(k);
+        n.matches.push(k2);
+        n.matches.push(k3);
+
+        assert.isTrue(n.existsValue(t1));
+        assert.isFalse(n.existsValue(t2));
+        assert.isTrue(n.existsValue(t3));
+      });
+
+      test('test getFromsByTo ', function() {
+        n.clear();
+        
+        assert.equal(n.getFromsByTo(t1).length, 0);
+        assert.equal(n.getFromsByTo(t2).length, 0);
+        assert.equal(n.getFromsByTo(t3).length, 0);
+
+        n.matches.push(k);
+        n.matches.push(k2);
+        n.matches.push(k3);
+
+        assert.equal(n.getFromsByTo(t1).length, 1);
+        assert.equal(n.getFromsByTo(t2).length, 0);
+        assert.equal(n.getFromsByTo(t3).length, 2);
+      });
+
+      test('test getMatches', function() {
+        n.clear();
+        
+        var x = {
+          from: f1,
+          value: [t1, t2]
+        }
+
+        var x2 = {
+          from: f2,
+          value: [t3, t2, f1]
+        }
+
+        n.matches.push(x);
+        n.matches.push(x2);
+
+
+        assert.equal(n.getMatches(f1).length, 2);
+        assert.equal(n.getMatches(f2).length, 3);
+        assert.equal(n.getMatches(f3), null);
+
+        var am = n.getMatches();
+        assert.equal(am.length, 2);
+        assert.equal(am[0].from, f1);
+        assert.equal(am[1].from, f2);
+        assert.equal(am[0].value.length, 2);
+        assert.equal(am[1].value.length, 3);
+
+      });
+
+      test('test setMatched with false', function(done) {
+        var func = function(event) {
+          assert.isFalse(event.detail.isMatch);
+          assert.equal(event.detail.from, f1);
+          assert.equal(event.detail.to, t1);
+          assert.isFalse(m.isMatch(f1, t1));
+          m.removeEventListener('asq-match', func);
+          done();
+        }
+
+        m.clear();
+        m.addEventListener('asq-match', func);
+        m.setMatched(f1, t1, false);
+      });
+
+      test('test setMatched with true', function(done) {
+        var func = function(event) {
+          assert.isTrue(event.detail.isMatch);
+          assert.equal(event.detail.from, f1);
+          assert.equal(event.detail.to, t1);
+          assert.isTrue(m.isMatch(f1, t1));
+          m.removeEventListener('asq-match', func);
+          done();
+        }
+
+        m.clear();
+        m.addEventListener('asq-match', func);
+        m.setMatched(f1, t1, true);
       });
 
       test('match items', function(done) {
@@ -34,6 +236,7 @@
           m.removeEventListener('asq-match', func);
           done();
         }
+        m.clear();
         m.addEventListener('asq-match', func);
         m.match('(from)', '(to)');
       });
@@ -44,7 +247,7 @@
         assert.equal(m.getMatches(), item);
       });
 
-      test('test lookup', function() {
+      test('tests many functions', function() {
         m.clear();
         var f1 = '(from1)';
         var f2 = '(from2)';
@@ -66,7 +269,6 @@
         assert.equal(0, m.getMatches(f2).indexOf(t2));
         assert.equal(0, m.getMatches(f3).indexOf(t3));
 
-        
       });
     });
   </script>
