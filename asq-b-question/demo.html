@@ -1,0 +1,118 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="asq-elements" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <title>asq-b-question</title>
+
+  <script src="../../webcomponentsjs/webcomponents.js"></script>
+
+  <link href="asq-b-question.html" rel="import">
+  <link href="asq-bucket.html" rel="import">
+  <link href="asq-object.html" rel="import">
+  
+
+  <link href="../../asq-exercise/asq-exercise.html" rel="import">
+  
+<!--   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+  <style shim-shadowdom>
+    body {
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      font-size: 14px;
+      margin: 0;
+      padding: 24px;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      -webkit-touch-callout: none;
+    }
+    section {
+      padding: 20px 0;
+    }
+    section > div {
+      padding: 14px;
+      font-size: 16px;
+    }
+
+    asq-match-question::shadow div {
+      border: 2px dotted blue;
+      float: left;
+
+    }
+
+    img {
+      width: auto;
+    }
+
+    asq-bucket {
+      border: 1px solid gray;
+      /*display: inline-block;*/
+    }
+
+    asq-bucket {
+      display: inline-block;
+      padding: 4px;
+      margin-bottom: 20px;
+      line-height: 1.42857143;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      -webkit-transition: border .2s ease-in-out;
+           -o-transition: border .2s ease-in-out;
+              transition: border .2s ease-in-out;
+    }
+
+    asq-bucket /deep/ b {
+      color: #31708f;
+      background-color: #d9edf7;
+      border-color: #bce8f1;
+      padding: 15px;
+      margin-bottom: 20px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+    }
+
+    asq-b-question /deep/ asq-object {
+        color: #a94442;
+        background-color: #f2dede;
+        border-color: #ebccd1;
+        border-color: #faebcc;
+        padding: 15px;
+        margin-bottom: 20px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+        display: inline-block;
+    }
+
+
+  </style>
+
+</head>
+<body>
+
+  <!-- <asq-bucket name="Long">Long</asq-bucket> -->
+  <asq-exercise>
+    <asq-stem><h3>1-1</h3></asq-stem>
+    <asq-b-question>
+      <div id="buckets">
+        <asq-bucket name="Sunny"><b>It is Sunny</b></asq-bucket>
+        <asq-bucket name="Windy"><b>It is Windy</b></asq-bucket>
+        <asq-bucket name="Rainy"><b>It is Rainy</b></asq-bucket>
+      </div>
+      <div id="objects">
+        <asq-object name="sonnig">Es ist sonnig</asq-object>
+        <asq-object name="windig">Es ist windig</asq-object>
+        <asq-object name="regnet">Es ist regnet</asq-object>
+      </div>
+    </asq-b-question>
+  </asq-exercise> 
+
+  
+
+  <script>
+
+  </script>
+</body>
+</html>

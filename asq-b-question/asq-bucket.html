@@ -1,0 +1,119 @@
+<link rel="import" href="../../polymer/polymer.html">
+<link rel="import" href="../../asq-base/asq-base.html">
+<link rel="import" href="./asq-object.html">
+
+
+<!--
+......
+
+##### Example
+    <asq-bucket>b1</asq-bucket>
+
+@element asq-bucket
+@group ASQ Elements
+@blurb ...
+@homepage http://github.com/ASQ_USI/asq-bucket
+-->
+<polymer-element name="asq-bucket" attributes="name">
+  <template>
+    <style>
+      :host {
+        width: auto;
+        display: inline-block;
+        border: 1px solid gray;
+      }
+      section {
+
+        
+      }
+
+      div {
+        text-align: center;
+      }
+
+      #container {
+        width: 200px;
+        height: 200px;
+        /*background-color: gray;*/
+      }
+
+      polyfill-next-selector { content: 'div#buckets'; }
+      ::content div#buckets {
+        float: left;
+        /*text-align: center;*/
+      }
+
+      #container > div {
+        text-align: center;
+        top: 4em;
+        position: relative;
+      }
+
+      #container > asq-object {
+        text-align: center;
+        top: 5em;
+        position: relative;
+      }
+    </style>
+
+
+
+    <section >
+      
+      
+      <div id="container">
+        <div id="cont">
+          <content></content>
+        </div>
+        
+      </div>
+    </section>
+  </template>
+  <script>
+    (function() {
+
+      var p = {
+
+
+
+        reset: function() {
+          var node = this.$.container;
+          while(node.firstChild){
+            node.removeChild(node.firstChild)
+          }
+        },
+
+       
+        created: function() {
+          this.addEventListener('click', this.onTap);
+        },
+
+        onTap: function(event) {
+          this.fire('asq-bucket-tap', this);
+        },
+
+      
+        add: function(obj) {
+          this.$.container.appendChild(obj);
+          this.removeEventListener('click', this.onTap);
+          this.$.cont.style.visibility = 'hidden';
+        },
+
+        contains: function(obj) {
+          var existed = false;
+          this.$.container.childNodes.array().forEach(function(e) {
+            if ( e.name == obj.name ) {
+              existed = true;
+            }
+          })
+          return existed;
+        }
+
+      }
+
+      ASQ.asqify(p);
+      Polymer('asq-bucket', p);
+    })()
+    
+  </script>
+</polymer-element>

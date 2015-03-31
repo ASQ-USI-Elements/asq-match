@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="asq-elements" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  <title>asq-a-question</title>
+
+  <script src="../../webcomponentsjs/webcomponents.js"></script>
+
+  <link href="asq-object.html" rel="import">
+  <link href="asq-bucket.html" rel="import">
+  <link href="asq-a-question.html" rel="import">
+
+  <link href="../../asq-exercise/asq-exercise.html" rel="import">
+  
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+  <style shim-shadowdom>
+    body {
+      font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+      font-size: 14px;
+      margin: 0;
+      padding: 24px;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+      -webkit-touch-callout: none;
+    }
+
+    asq-bucket {
+      display: inline-block;
+      padding: 4px;
+      margin-bottom: 20px;
+      line-height: 1.42857143;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      -webkit-transition: border .2s ease-in-out;
+           -o-transition: border .2s ease-in-out;
+              transition: border .2s ease-in-out;
+
+    }
+
+    asq-bucket {
+      cursor: pointer;
+    }
+
+    asq-bucket /deep/ asq-object {
+      cursor: default;
+    }
+
+    asq-bucket /deep/ span {
+      color: #E6E6E6;
+      background-color: #0080FF;
+      border-color: #bce8f1;
+      padding: 15px;
+
+      border: 1px solid transparent;
+      border-radius: 4px;
+      display: block;
+      text-align: center;
+
+    }
+
+    asq-exercise > asq-a-question {
+      max-width: 400px;
+      text-align: center;
+      max-width: 50px auto;
+    }
+
+    asq-a-question /deep/ section {
+      text-align: center;
+    }
+
+    body > asq-exercise {
+      display: block;
+
+      width: 600px;
+    }
+
+    asq-a-question /deep/ asq-object {
+      display: block;
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+      border-color: #faebcc;
+      padding: 15px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+
+      max-width: 200px;
+      margin: 1px auto;
+    }
+
+    asq-a-question /deep/ asq-object /deep/ b {
+      color: red;
+    }
+
+    asq-a-question {
+      height: auto
+    }
+
+  </style>
+
+</head>
+<body>
+
+
+  <asq-exercise>
+    <asq-stem><h3>1-M</h3></asq-stem>
+    <asq-a-question>
+      <div id="buckets">
+        <asq-bucket name="Long"><span>Long</span></asq-bucket>
+        <asq-bucket name="Short"><span>Short</span></asq-bucket>
+      </div>
+      <div id="objects">
+        <div objects>
+        </div>
+        <div buckets>
+
+        </div>
+</core-drawer-panel>
+      <div>
+        <!-- all objects go here -->
+      </div match-targets>
+        <asq-object name="glas">Gl<b>a</b>s</asq-object>
+        <asq-object name="nudeln">N<b>u</b>deln</asq-object>
+        <asq-object name="platz">Pl<b>a</b>tz</asq-object>
+        <asq-object name="vier">v<b>i</b>er</asq-object>
+      </div>
+    </asq-a-question>
+  </asq-exercise>
+
+
+  
+  
+
+  <script>
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+<link rel="import" href="../../polymer/polymer.html">
+
+<link rel="import" href="../../asq-base/asq-base.html">
+<link rel="import" href="../asq-match.html">
+<link rel="import" href="../../paper-button/paper-button.html">
+
+<!--
+......
+
+##### Example
+    <asq-a-question id="aq">
+      <div id="labels">
+        <asq-label name="big">A bigger hello.</asq-label>
+        <asq-label name="small">A smaller hello.</asq-label>
+      </div>
+
+      <div id="buckets">
+        <asq-bucket id="b1" name="bucket_1"><img src="http://upload.wikimedia.org/wikipedia/en/6/65/Hello_logo_sm.gif" width="100px" alt="a picture"></asq-bucket>
+
+        <asq-bucket id="b2" name="bucket_2"><img src="http://www.gmkfreelogos.com/logos/H/img/Hello_Design.gif" width="100px" alt="hi!"></asq-bucket>
+      </div>
+      
+    </asq-a-question>
+
+@element asq-a-question
+@group ASQ Elements
+@blurb ...
+@homepage http://github.com/ASQ_USI/a-question
+-->
+<polymer-element name="asq-a-question" attributes="mode">
+  <template>
+    <style>
+    section#show {
+      margin: 0px auto;
+      display: block;
+      text-align: center;
+
+    }
+
+    </style>
+
+    <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
+    <section>
+      <content id="items" select="#buckets"></content>
+    </section>
+
+
+    <section hidden>
+      <content id="objects" select="#objects"></content>
+    </section>
+
+    <section id="show">
+
+    </section>
+    
+  </template>
+
+  <script>
+  (function() {
+
+    function onClickBucket(){
+      //this.match
+      //this.bucket.appendChild
+      // showNextItem()
+    }
+
+    var modes = {
+      SINGLE: "single",
+      O2M: "one_to_many",
+      M2O: "many_to_one",
+      M2M: 'many_to_many'
+    };
+
+    var p = {
+
+      mode: '1-m',
+
+      modeState: modes.SINGLE,
+
+      index: 0,
+
+      objects: [],
+
+      created: function() {
+        this.addEventListener('asq-match', this.onMatch, true);
+        this.addEventListener('asq-bucket-tap', this.onBucketTap);
+        this.addEventListener('asq-object-change', this.onChange);
+
+      },
+
+      domReady: function() {
+        this.objects = this.getUnmatchedObjects();
+        console.log(this.objects);
+        console.log(this.getBuckets());
+        this.refresh(this.index);
+      },
+
+      onChange: function(event) {
+        this.changeObject(event.detail);
+      },
+
+
+      changeObject: function(obj) {
+
+        var buckets = this.getBuckets();
+        var oldBucket = this.findOutterBucketByObject(obj);
+
+        if (!oldBucket) return;
+
+        var peerBucket = buckets.filter(function(e){
+          return e.name != oldBucket.name;
+        })[0];
+        peerBucket.add(obj);
+        this.match(peerBucket, obj);
+
+      },
+
+      findOutterBucketByObject: function(obj) {
+        var buckets = this.getBuckets();
+        return buckets.filter(function(e){
+          return e.contains(obj);
+        })[0]; 
+      },
+
+
+      onBucketTap: function(e) {
+        var bucket = e.detail;
+        if ( this.index < this.objects.length ) {
+          bucket.add(this.objects[this.index]);
+          this.match(bucket, this.objects[this.index]);
+        }
+        this.index++;
+        this.refresh(this.index);
+        
+      },
+
+      refresh: function(index) {
+        if (index < this.objects.length ) this.$.show.appendChild(this.objects[index]);
+        else this.$.show.innerHtml = '';
+      },
+
+      onMatch: function(e) {
+
+        var isMatch = e.detail.isMatch;
+        var k = e.detail.from;
+        var v = e.detail.to;
+        // var label = this.getLabelByName(v);
+        // var bucket = this.getBucketByName(k);
+        // if (!label || !bucket) return;
+
+        // bucket.toggle(isMatch, k, v, label);
+        // 
+        // console.log('xx', k, v, isMatch);
+
+        this.prettyPrint();
+        
+        
+      },
+
+
+      isMatch: function(k, v) {
+        return this.$.match.isMatch(k.name, v.name);
+      },
+
+
+      match: function(k, v) {
+        this.$.match.match(k.name, v.name);
+      },
+
+
+
+      /**
+       * The `submit` method returns an object that respresents the submission of this question. The object has the following structure:
+
+           {
+              questionUid: this.uid, 
+              timestamp: new Date(),
+
+              // Array of the result of submit() called for each option of the question
+              submission: [] 
+           }
+       * Only enabled when the `role` of the element is <b>viewer</b>.
+       *
+       * @method submit
+       */
+      submit: function() {
+        if ( this.role !== this.roles.VIEWER ) {
+          return;
+        }
+
+        var submission = this.$.match.getMatches();
+
+        return {
+          questionUid: this.uid,
+          timestamp: new Date(),
+          submission: submission
+        };
+      },
+
+      getBuckets: function() {
+        var buckets = [];
+        this.$.items.getDistributedNodes().array().forEach(function(el, idx) {
+          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
+            if ( el.id == 'buckets' ) {
+              el.childNodes.array().filter(function(e) {
+                return e.nodeType == 1;
+              }).forEach(function(e){
+                buckets.push(e);
+              });
+            }
+          }
+        });
+        return buckets;
+
+      },
+
+      getUnmatchedObjects: function() {
+        var objects = [];
+        this.$.objects.getDistributedNodes().array().forEach(function(el, idx) {
+          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
+            if ( el.id == 'objects' ) {
+              el.childNodes.array().filter(function(e) {
+                return e.nodeType == 1;
+              }).forEach(function(e){
+                objects.push(e);
+              });
+            }
+          }
+        });
+        return objects;
+
+      },
+
+      modeChanged: function() {
+        switch(this.mode) {
+          case "1-1":
+          case "single":
+            this.modeState = modes.SINGLE;
+            break;
+          case "1-n":
+          case "1-m":
+            this.modeState = modes.O2M;
+            break;
+          case "n-1":
+          case "m-1":
+            this.modeState = modes.M2O;
+            break;
+          case "m-n":
+          case "n-m":
+          case "multi":
+            this.modeState = modes.M2M;
+            break;
+          default:
+            this.modeState = SINGLE;
+            this.mode = '1-1';
+        }
+
+      },
+
+      prettyPrint: function() {
+        var ms = this.$.match.getMatches();
+        console.log(' - - - - match', ms.length, ' - - - -');
+        ms.forEach(function(k, index){
+          console.log('  ', index, ' : ' , k.from, k.value);
+        });
+        console.log(' ');
+      }
+
+    }
+
+    ASQ.asqify(p, true);
+    Polymer('asq-a-question', p);
+
+  })();
+  </script>
+</polymer-element>
