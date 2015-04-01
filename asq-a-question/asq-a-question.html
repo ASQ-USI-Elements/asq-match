@@ -8,19 +8,19 @@
 ......
 
 ##### Example
-    <asq-a-question id="aq">
-      <div id="labels">
-        <asq-label name="big">A bigger hello.</asq-label>
-        <asq-label name="small">A smaller hello.</asq-label>
+    <asq-a-question>
+      <div targets>
+        <div target name="Long"><span>Long</span></div>
+        <div target name="Short"><span>Short</span></div>
       </div>
-
-      <div id="buckets">
-        <asq-bucket id="b1" name="bucket_1"><img src="http://upload.wikimedia.org/wikipedia/en/6/65/Hello_logo_sm.gif" width="100px" alt="a picture"></asq-bucket>
-
-        <asq-bucket id="b2" name="bucket_2"><img src="http://www.gmkfreelogos.com/logos/H/img/Hello_Design.gif" width="100px" alt="hi!"></asq-bucket>
+      <div objects>
+        <div object name="glas">Gl<b>a</b>s</div>
+        <div object name="nudeln">N<b>u</b>deln</div>
+        <div object name="platz">Pl<b>a</b>tz</div>
+        <div object name="vier">v<b>i</b>er</div>
       </div>
-      
     </asq-a-question>
+
 
 @element asq-a-question
 @group ASQ Elements
@@ -34,35 +34,26 @@
       margin: 0px auto;
       display: block;
       text-align: center;
-
     }
+
+
 
     </style>
 
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
     <section>
-      <content id="items" select="#buckets"></content>
+      <content id="items" select="[targets]"></content>
     </section>
-
-
     <section hidden>
-      <content id="objects" select="#objects"></content>
+      <content id="objects" select="[objects]"></content>
     </section>
 
-    <section id="show">
-
-    </section>
+    <section id="show"></section>
     
   </template>
 
   <script>
   (function() {
-
-    function onClickBucket(){
-      //this.match
-      //this.bucket.appendChild
-      // showNextItem()
-    }
 
     var modes = {
       SINGLE: "single",
@@ -83,58 +74,80 @@
 
       created: function() {
         this.addEventListener('asq-match', this.onMatch, true);
-        this.addEventListener('asq-bucket-tap', this.onBucketTap);
-        this.addEventListener('asq-object-change', this.onChange);
-
       },
 
       domReady: function() {
         this.objects = this.getUnmatchedObjects();
-        console.log(this.objects);
-        console.log(this.getBuckets());
-        this.refresh(this.index);
+        this.bindEventForTargets();
+        this.showNextObject(this.index);
       },
 
-      onChange: function(event) {
-        this.changeObject(event.detail);
+      bindEventForTargets: function() {
+        this.getTargets().forEach(function(el, index){
+          el.addEventListener('click', this.onBucketTap.bind(this));
+        }, this);
+      },
+
+      onChangeObject: function(event) {
+        console.log('onChangeObject', event.target);
+        this.changeObject(event.target.parentNode);
+        event.stopPropagation();
       },
 
 
       changeObject: function(obj) {
-
-        var buckets = this.getBuckets();
-        var oldBucket = this.findOutterBucketByObject(obj);
+        var targets = this.getTargets();
+        var oldBucket = obj.parentNode;
 
         if (!oldBucket) return;
 
-        var peerBucket = buckets.filter(function(e){
-          return e.name != oldBucket.name;
+        var peerBucket = targets.filter(function(e){
+          return e.getAttribute('name') != oldBucket.getAttribute('name');
         })[0];
-        peerBucket.add(obj);
+
+        peerBucket.appendChild(obj);
         this.match(peerBucket, obj);
-
-      },
-
-      findOutterBucketByObject: function(obj) {
-        var buckets = this.getBuckets();
-        return buckets.filter(function(e){
-          return e.contains(obj);
-        })[0]; 
-      },
-
-
-      onBucketTap: function(e) {
-        var bucket = e.detail;
-        if ( this.index < this.objects.length ) {
-          bucket.add(this.objects[this.index]);
-          this.match(bucket, this.objects[this.index]);
-        }
-        this.index++;
-        this.refresh(this.index);
         
       },
 
-      refresh: function(index) {
+      onBucketTap: function(e) {
+
+        if ( this.index >= this.objects.length ) {
+          return;
+        }
+        console.log('onBucketTap', event.target);
+
+        var bucket = e.target;
+        var object = this.objects[this.index];
+
+        // add a small label onto the object, which is used to move the object over 
+        // the targets
+        var changeLabel = document.createElement('i');
+        changeLabel.setAttribute('change', true);
+        changeLabel.textContent = '<>';
+        object.appendChild(changeLabel);
+
+        changeLabel.addEventListener('click', this.onChangeObject.bind(this), true);
+        object.addEventListener('click', this.onMatchedObjectClick.bind(this));
+        if ( this.index < this.objects.length ) {
+          bucket.appendChild(object);
+          this.match(bucket, this.objects[this.index]);
+        }
+        this.index++;
+        this.showNextObject(this.index);
+
+        // if ( this.index >= this.objects.length ) {
+        //   this.unbindEvent();
+        // }
+        
+      },
+
+      onMatchedObjectClick: function(event) {
+        console.log('onChange', event.target);
+        event.stopPropagation();
+      },
+
+      showNextObject: function(index) {
         if (index < this.objects.length ) this.$.show.appendChild(this.objects[index]);
         else this.$.show.innerHtml = '';
       },
@@ -144,16 +157,8 @@
         var isMatch = e.detail.isMatch;
         var k = e.detail.from;
         var v = e.detail.to;
-        // var label = this.getLabelByName(v);
-        // var bucket = this.getBucketByName(k);
-        // if (!label || !bucket) return;
-
-        // bucket.toggle(isMatch, k, v, label);
-        // 
-        // console.log('xx', k, v, isMatch);
 
         this.prettyPrint();
-        
         
       },
 
@@ -197,34 +202,34 @@
         };
       },
 
-      getBuckets: function() {
-        var buckets = [];
+
+      getTargets: function() {
+        var targets = [];
         this.$.items.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
-            if ( el.id == 'buckets' ) {
-              el.childNodes.array().filter(function(e) {
-                return e.nodeType == 1;
-              }).forEach(function(e){
-                buckets.push(e);
-              });
-            }
+          if ( el.hasAttribute('targets') ) {
+            el.childNodes.array().filter(function(e) {
+              return e.nodeType == 1;
+            }).forEach(function(e){
+              e.hasAttribute('target') && targets.push(e);
+            });
           }
         });
-        return buckets;
-
+        return targets;
       },
 
+      /**
+       * Get all unmatched objects.
+       * @return {[type]} [description]
+       */
       getUnmatchedObjects: function() {
         var objects = [];
         this.$.objects.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
-            if ( el.id == 'objects' ) {
-              el.childNodes.array().filter(function(e) {
-                return e.nodeType == 1;
-              }).forEach(function(e){
-                objects.push(e);
-              });
-            }
+          if ( el.hasAttribute('objects') ) {
+            el.childNodes.array().filter(function(e) {
+              return e.nodeType == 1;
+            }).forEach(function(e){
+              e.hasAttribute('object') && objects.push(e);
+            });
           }
         });
         return objects;
@@ -264,7 +269,15 @@
           console.log('  ', index, ' : ' , k.from, k.value);
         });
         console.log(' ');
-      }
+      },
+
+      unbindEvent: function() {
+        // TODO
+        console.log('unbindEvent');
+        this.getTargets().forEach(function(el, index){
+          el.removeEventListener('click', this.onBucketTap.bind(this));
+        }, this);
+      },
 
     }
 

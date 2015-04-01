@@ -28,8 +28,8 @@
       -webkit-touch-callout: none;
     }
 
-    asq-bucket {
-      display: inline-block;
+    [target] {
+
       padding: 4px;
       margin-bottom: 20px;
       line-height: 1.42857143;
@@ -41,16 +41,34 @@
               transition: border .2s ease-in-out;
 
     }
+    [targets] {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
 
-    asq-bucket {
+    [target] {
       cursor: pointer;
+      display: block;
+      
+      min-height: 200px;
+      min-width: 150px;
+
     }
 
-    asq-bucket /deep/ asq-object {
+    [target] > [object] {
       cursor: default;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin: 2px;
     }
 
-    asq-bucket /deep/ span {
+    [target] > [object] > [change] {
+      background-color: #FF6666;
+    }
+
+    [target] > span {
       color: #E6E6E6;
       background-color: #0080FF;
       border-color: #bce8f1;
@@ -79,7 +97,7 @@
       width: 600px;
     }
 
-    asq-a-question /deep/ asq-object {
+    asq-a-question /deep/ [object] {
       display: block;
       color: #a94442;
       background-color: #f2dede;
@@ -89,16 +107,18 @@
       border: 1px solid transparent;
       border-radius: 4px;
 
-      max-width: 200px;
+      max-width: 150px;
       margin: 1px auto;
     }
 
-    asq-a-question /deep/ asq-object /deep/ b {
+    asq-a-question > [object] > b {
       color: red;
     }
 
     asq-a-question {
-      height: auto
+      height: auto;
+      width: auto;
+
     }
 
   </style>
@@ -106,28 +126,18 @@
 </head>
 <body>
 
-
   <asq-exercise>
     <asq-stem><h3>1-M</h3></asq-stem>
     <asq-a-question>
-      <div id="buckets">
-        <asq-bucket name="Long"><span>Long</span></asq-bucket>
-        <asq-bucket name="Short"><span>Short</span></asq-bucket>
+      <div targets>
+        <div target name="Long"><span>Long</span></div>
+        <div target name="Short"><span>Short</span></div>
       </div>
-      <div id="objects">
-        <div objects>
-        </div>
-        <div buckets>
-
-        </div>
-</core-drawer-panel>
-      <div>
-        <!-- all objects go here -->
-      </div match-targets>
-        <asq-object name="glas">Gl<b>a</b>s</asq-object>
-        <asq-object name="nudeln">N<b>u</b>deln</asq-object>
-        <asq-object name="platz">Pl<b>a</b>tz</asq-object>
-        <asq-object name="vier">v<b>i</b>er</asq-object>
+      <div objects>
+        <div object name="glas">Gl<b>a</b>s</div>
+        <div object name="nudeln">N<b>u</b>deln</div>
+        <div object name="platz">Pl<b>a</b>tz</div>
+        <div object name="vier">v<b>i</b>er</div>
       </div>
     </asq-a-question>
   </asq-exercise>
