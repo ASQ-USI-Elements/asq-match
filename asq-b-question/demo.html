@@ -8,13 +8,10 @@
   <script src="../../webcomponentsjs/webcomponents.js"></script>
 
   <link href="asq-b-question.html" rel="import">
-  <link href="asq-bucket.html" rel="import">
-  <link href="asq-object.html" rel="import">
   
 
   <link href="../../asq-exercise/asq-exercise.html" rel="import">
   
-<!--   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"> -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
@@ -28,28 +25,8 @@
       -webkit-tap-highlight-color: rgba(0,0,0,0);
       -webkit-touch-callout: none;
     }
-    section {
-      padding: 20px 0;
-    }
-    section > div {
-      padding: 14px;
-      font-size: 16px;
-    }
+    [target] {
 
-    asq-match-question::shadow div {
-      border: 2px dotted blue;
-      float: left;
-
-    }
-
-    asq-bucket {
-      border: 1px solid gray;
-      width: 200px;
-      height: 200px;
-
-    }
-
-    asq-bucket {
       padding: 4px;
       margin-bottom: 20px;
       line-height: 1.42857143;
@@ -59,27 +36,86 @@
       -webkit-transition: border .2s ease-in-out;
            -o-transition: border .2s ease-in-out;
               transition: border .2s ease-in-out;
+
+    }
+    [targets] {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
     }
 
-    asq-bucket /deep/ b {
-      color: #31708f;
-      background-color: #d9edf7;
+    [target] {
+      cursor: pointer;
+      display: block;
+      
+      min-height: 200px;
+      min-width: 150px;
+
+    }
+
+    [target] > [object] {
+      cursor: default;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      margin: 2px;
+    }
+
+    [target] > [object] > [change] {
+      background-color: #FF6666;
+    }
+
+    [target] > span {
+      color: #E6E6E6;
+      background-color: #0080FF;
       border-color: #bce8f1;
+      padding: 15px;
+
+      border: 1px solid transparent;
+      border-radius: 4px;
+      display: block;
+      text-align: center;
+
+    }
+
+    asq-exercise > asq-b-question {
+      max-width: 400px;
+      text-align: center;
+      max-width: 50px auto;
+    }
+
+    asq-b-question /deep/ section {
+      text-align: center;
+    }
+
+    body > asq-exercise {
+      display: block;
+
+      width: 600px;
+    }
+
+    asq-b-question /deep/ [object] {
+      display: block;
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+      border-color: #faebcc;
       padding: 15px;
       border: 1px solid transparent;
       border-radius: 4px;
+
+      max-width: 150px;
+      margin: 1px auto;
     }
 
-    asq-b-question /deep/ asq-object {
-        color: #a94442;
-        background-color: #f2dede;
-        border-color: #ebccd1;
-        border-color: #faebcc;
-        padding: 15px;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        max-width: 100px;
-        text-align: center;
+    asq-b-question > [object] > b {
+      color: red;
+    }
+
+    asq-b-question {
+      height: auto;
+      width: auto;
+
     }
 
   </style>
@@ -87,24 +123,22 @@
 </head>
 <body>
 
-  <!-- <asq-bucket name="Long">Long</asq-bucket> -->
   <asq-exercise>
     <asq-stem><h3>1-1</h3></asq-stem>
     <asq-b-question>
-      <div id="buckets" horizontal layout>
-        <asq-bucket name="Sunny"><b>It is Sunny</b></asq-bucket>
-        <asq-bucket name="Windy"><b>It is Windy</b></asq-bucket>
-        <asq-bucket name="Rainy"><b>It is Rainy</b></asq-bucket>
+      <div targets horizontal layout>
+        <div target name="Sunny"><b>It is Sunny</b></div>
+        <div target name="Windy"><b>It is Windy</b></div>
+        <div target name="Rainy"><b>It is Rainy</b></div>
       </div>
-      <div id="objects">
-        <asq-object name="sonnig">Es ist sonnig</asq-object>
-        <asq-object name="windig">Es ist windig</asq-object>
-        <asq-object name="regnet">Es ist regnet</asq-object>
+
+      <div objects>
+        <div object name="sonnig">Es ist sonnig</div>
+        <div object name="windig">Es ist windig</div>
+        <div object name="regnet">Es ist regnet</div>
       </div>
     </asq-b-question>
   </asq-exercise> 
-
-  
 
 
   <script>
