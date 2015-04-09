@@ -31,29 +31,18 @@
   <template>
     <style shim-shadowdom>
       :host {
-        width: 200px;
-        height: 200px;
+
 
       }
 
     </style>
 
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
-<!--     <section>
-      <content id="buckets" select="#buckets"></content>
-    </section>
-    <section>
-      <content id="question" select="img"></content>
-      <content id="question" select="asq-stem"></content>
-    </section>
-    <section >
-      <content id="objects" select="#objects"></content>
-    </section> -->
     
     <content id="question" select="img"></content>
     <content id="question" select="asq-stem"></content>
-    <content id="buckets" select="#buckets"></content>
-    <content id="objects" select="#objects"></content>
+    <content id="buckets" select="[targets]"></content>
+    <content id="objects" select="[objects]"></content>
 
   </template>
 
@@ -80,54 +69,47 @@
       bucket: null,
 
       created: function() {
-        // this.addEventListener('asq-match', this.onMatch);
-        
-
-      },
-
-
-      onObjectTap: function(event) {
-
-        var obj = event.detail;
-        if ( ! this.bucket.contains(obj) ) {
-          this.bucket.add(obj);
-        } else {
-          this.getObjectDIV().appendChild(obj);
-        }
-
-        this.match(this.bucket, obj);
-        
+        this.addEventListener('asq-match', this.onMatch);
       },
 
       domReady: function() {
         this.objects = this.getUnmatchedObjects();
-        this.bucket = this.getBuckets()[0];
-        console.log(this.objects);
-        console.log(this.bucket);
-
-        this.addEventListener('asq-object-tap', this.onObjectTap);
-       
+        this.bucket = this.getBucket();
+        console.log('ss', this.bucket);
+        this.bindEventForObjects();
       },
 
+      bindEventForObjects: function() {
+        this.objects.forEach(function(el, index){
+          el.addEventListener('click', this.onObjectTap.bind(this));
+        }, this);
+      },
 
+      onObjectTap: function(event) {
+        var obj = event.target;
+        console.log(event);
+        if ( ! this.isMatch(this.bucket, obj) ) {
+          this.bucket.appendChild(obj);
+        } else {
+          this.getObjectDIV().appendChild(obj);
+        }
 
+        this.match(this.bucket, obj);     
+      },
 
       onMatch: function(e) {
-
-
         this.prettyPrint();
-        
-        
       },
 
 
       isMatch: function(k, v) {
-        return this.$.match.isMatch(k.name, v.name);
+        console.log(k, v);
+        return this.$.match.isMatch(k.getAttribute("name"), v.getAttribute("name"));
       },
 
 
       match: function(k, v) {
-        this.$.match.match(k.name, v.name);
+        this.$.match.match(k.getAttribute("name"), v.getAttribute("name"));
       },
 
 
@@ -160,44 +142,39 @@
         };
       },
 
-      getBuckets: function() {
-        var buckets = [];
+      getBucket: function() {
+        var targets = [];
         this.$.buckets.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
-            if ( el.id == 'buckets' ) {
-              el.childNodes.array().filter(function(e) {
-                return e.nodeType == 1;
-              }).forEach(function(e){
-                buckets.push(e);
-              });
-            }
+          if ( el.hasAttribute('targets') ) {
+            el.childNodes.array().filter(function(e) {
+              return e.nodeType == 1;
+            }).forEach(function(e){
+              e.hasAttribute('target') && targets.push(e);
+            });
           }
         });
-        return buckets;
+        return targets.length >= 1 ? targets[0] : null;
 
       },
 
       getObjectDIV: function() {
         return this.$.objects.getDistributedNodes().array().filter(function(el) {
-          return el.nodeType == 1 && el.nodeName == 'DIV' && el.id == "objects"
+          return el.nodeType == 1 && el.nodeName == 'DIV'
         })[0];
       },
 
       getUnmatchedObjects: function() {
         var objects = [];
         this.$.objects.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.nodeType == 1 && el.nodeName == 'DIV' ) {
-            if ( el.id == 'objects' ) {
-              el.childNodes.array().filter(function(e) {
-                return e.nodeType == 1;
-              }).forEach(function(e){
-                objects.push(e);
-              });
-            }
+          if ( el.hasAttribute('objects') ) {
+            el.childNodes.array().filter(function(e) {
+              return e.nodeType == 1;
+            }).forEach(function(e){
+              e.hasAttribute('object') && objects.push(e);
+            });
           }
         });
         return objects;
-
       },
 
       modeChanged: function() {

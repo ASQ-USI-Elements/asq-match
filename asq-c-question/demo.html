@@ -8,8 +8,6 @@
   <script src="../../webcomponentsjs/webcomponents.js"></script>
 
   <link href="asq-c-question.html" rel="import">
-  <link href="asq-bucket.html" rel="import">
-  <link href="asq-object.html" rel="import">
   
 
   <link href="../../asq-exercise/asq-exercise.html" rel="import">
@@ -28,41 +26,74 @@
       -webkit-tap-highlight-color: rgba(0,0,0,0);
       -webkit-touch-callout: none;
     }
-    section {
-      padding: 20px 0;
-    }
-    section > div {
-      padding: 14px;
-      font-size: 16px;
-    }
+    
+    [target] {
 
-    asq-c-question::shadow div {
-      border: 2px dotted blue;
-      float: left;
+      padding: 4px;
+      margin-bottom: 20px;
+      line-height: 1.42857143;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      -webkit-transition: border .2s ease-in-out;
+           -o-transition: border .2s ease-in-out;
+              transition: border .2s ease-in-out;
+
     }
-
-    img {
-      width: auto;
-    }
-
-
-    asq-c-question /deep/ asq-object{
-      border: 1px dotted black; 
-      margin: 0.5em;
+    [targets] {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
     }
 
-    asq-c-question {
-      /*width: 10px;*/
+    [target] {
+      cursor: pointer;
+      display: block;
+      
+      min-height: 30px;
+      min-width: 150px;
+
+    }
+
+    [object] {
+      cursor: pointer;
+    }
+
+
+    asq-exercise > asq-c-question {
+      max-width: 400px;
       /*text-align: center;*/
-      /*border: 1px dotted gray;*/
-      /*background-color: orange;*/
+      max-width: 50px auto;
     }
 
+    asq-c-question /deep/ section {
+
+    }
+
+    body > asq-exercise {
+      display: block;
+      margin: 50px auto;
+      width: 600px;
+    }
+
+    asq-c-question /deep/ [object] {
+      display: block;
+      color: #a94442;
+      background-color: #f2dede;
+      border-color: #ebccd1;
+      border-color: #faebcc;
+      padding: 5px;
+      border: 1px solid transparent;
+      border-radius: 4px;
+
+      margin: 2px;
+    }
 
   </style>
 
 </head>
 <body>
+
 
   <asq-exercise>
     <asq-stem><h3>1-M</h3></asq-stem>
@@ -70,15 +101,15 @@
       <asq-stem><p>It is snowing and it is cold.</p></asq-stem>
       <img src="./cs1.png"></img>  
 
-      <div id="buckets">
-        <asq-bucket name="words"></asq-bucket>
+      <div targets >
+        <div target name="words" horizontal layout></div>
       </div>
 
-      <div id="objects">
-        <asq-object name="schneit">schneit</asq-object>
-        <asq-object name="und">und</asq-object>
-        <asq-object name="kalt">kalt</asq-object>
-        <asq-object name="es ist">es ist</asq-object>
+      <div objects horizontal layout>
+        <div object name="schneit">schneit</div>
+        <div object name="und">und</div>
+        <div object name="kalt">kalt</div>
+        <div object name="es ist">es ist</div>
       </div>
     </asq-c-question>
   </asq-exercise>
