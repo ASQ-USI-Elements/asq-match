@@ -164,12 +164,12 @@
 
 
       isMatch: function(k, v) {
-        return this.$.match.isMatch(k.name, v.name);
+        return this.$.match.isMatch(k.getAttribute("name"), v.getAttribute("name"));
       },
 
 
       match: function(k, v) {
-        this.$.match.match(k.name, v.name);
+        this.$.match.match(k.getAttribute("name"), v.getAttribute("name"));
       },
 
 
