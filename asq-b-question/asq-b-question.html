@@ -18,29 +18,15 @@
 <polymer-element name="asq-b-question" attributes="mode">
   <template>
     <style>
-
-      section {
-        margin: 1em;
+      :host {
+        display: block;
       }
-
-      
-
-
     </style>
 
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
-    <section>
-      <content id="items" select="#buckets"></content>
-    </section>
-
-
-    <section hidden>
-      <content id="objects" select="#objects"></content>
-    </section>
-
-    <section id="show">
-
-    </section>
+    <section><content id="items" select="#buckets"></content></section>
+    <section hidden><content id="objects" select="#objects"></content></section>
+    <section id="show"></section>
     
   </template>
 

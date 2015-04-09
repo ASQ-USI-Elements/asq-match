@@ -42,17 +42,14 @@
 
     }
 
-    img {
-      width: auto;
-    }
-
     asq-bucket {
       border: 1px solid gray;
-      /*display: inline-block;*/
+      width: 200px;
+      height: 200px;
+
     }
 
     asq-bucket {
-      display: inline-block;
       padding: 4px;
       margin-bottom: 20px;
       line-height: 1.42857143;
@@ -69,7 +66,6 @@
       background-color: #d9edf7;
       border-color: #bce8f1;
       padding: 15px;
-      margin-bottom: 20px;
       border: 1px solid transparent;
       border-radius: 4px;
     }
@@ -80,12 +76,11 @@
         border-color: #ebccd1;
         border-color: #faebcc;
         padding: 15px;
-        margin-bottom: 20px;
         border: 1px solid transparent;
         border-radius: 4px;
-        display: inline-block;
+        max-width: 100px;
+        text-align: center;
     }
-
 
   </style>
 
@@ -96,7 +91,7 @@
   <asq-exercise>
     <asq-stem><h3>1-1</h3></asq-stem>
     <asq-b-question>
-      <div id="buckets">
+      <div id="buckets" horizontal layout>
         <asq-bucket name="Sunny"><b>It is Sunny</b></asq-bucket>
         <asq-bucket name="Windy"><b>It is Windy</b></asq-bucket>
         <asq-bucket name="Rainy"><b>It is Rainy</b></asq-bucket>
@@ -110,6 +105,7 @@
   </asq-exercise> 
 
   
+
 
   <script>
 

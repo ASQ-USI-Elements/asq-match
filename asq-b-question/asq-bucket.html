@@ -18,71 +18,33 @@
   <template>
     <style>
       :host {
-        width: auto;
-        display: inline-block;
-        border: 1px solid gray;
+        display: block;
       }
+
       section {
-
-        
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        align-items: center;
+        align-content: center;
       }
 
-      div {
-        text-align: center;
-      }
-
-      #container {
-        width: 200px;
-        height: 200px;
-        /*background-color: gray;*/
-      }
-
-      polyfill-next-selector { content: 'div#buckets'; }
-      ::content div#buckets {
-        float: left;
-        /*text-align: center;*/
-      }
-
-      #container > div {
-        text-align: center;
-        top: 4em;
-        position: relative;
-      }
-
-      #container > asq-object {
-        text-align: center;
-        top: 5em;
-        position: relative;
-      }
     </style>
-
-
-
-    <section >
-      
-      
-      <div id="container">
-        <div id="cont">
-          <content></content>
-        </div>
-        
-      </div>
+    <section>
+      <div id="textContainer"><content></content></div>
+      <div id="itemsContainer"></div>
     </section>
   </template>
   <script>
     (function() {
 
       var p = {
-
-
-
         reset: function() {
-          var node = this.$.container;
+          var node = this.$.itemsContainer;
           while(node.firstChild){
             node.removeChild(node.firstChild)
           }
         },
-
        
         created: function() {
           this.addEventListener('click', this.onTap);
@@ -94,14 +56,14 @@
 
       
         add: function(obj) {
-          this.$.container.appendChild(obj);
+          this.$.itemsContainer.appendChild(obj);
           this.removeEventListener('click', this.onTap);
-          this.$.cont.style.visibility = 'hidden';
+          // this.$.textContainer.style.visibility = 'hidden';
         },
 
         contains: function(obj) {
           var existed = false;
-          this.$.container.childNodes.array().forEach(function(e) {
+          this.$.itemsContainer.childNodes.array().forEach(function(e) {
             if ( e.name == obj.name ) {
               existed = true;
             }
