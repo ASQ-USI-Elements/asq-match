@@ -115,9 +115,9 @@
         if ( this.index >= this.objects.length ) {
           return;
         }
-        console.log('onBucketTap', event.target);
+        console.log('onBucketTap', event.target, event.currentTarget);
 
-        var bucket = e.target;
+        var bucket = e.currentTarget;
         var object = this.objects[this.index];
 
         // add a small label onto the object, which is used to move the object over 
