@@ -27,7 +27,7 @@
 @blurb ...
 @homepage http://github.com/ASQ_USI/a-question
 -->
-<polymer-element name="asq-a-question" attributes="mode">
+<polymer-element name="asq-a-question" attributes="mode target interchangeable">
   <template>
     <style>
     section#show {
@@ -35,19 +35,11 @@
       display: block;
       text-align: center;
     }
-
-
-
     </style>
 
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
-    <section>
-      <content id="items" select="[targets]"></content>
-    </section>
-    <section hidden>
-      <content id="objects" select="[objects]"></content>
-    </section>
-
+    <section><content id="items" select="[targets]"></content></section>
+    <section hidden><content id="objects" select="[objects]"></content></section>
     <section id="show"></section>
     
   </template>
@@ -55,21 +47,10 @@
   <script>
   (function() {
 
-    var modes = {
-      SINGLE: "single",
-      O2M: "one_to_many",
-      M2O: "many_to_one",
-      M2M: 'many_to_many'
-    };
 
     var p = {
 
       mode: '1-m',
-
-      modeState: modes.SINGLE,
-
-      index: 0,
-
       objects: [],
 
       created: function() {
@@ -77,15 +58,14 @@
       },
 
       domReady: function() {
-        this.objects = this.getUnmatchedObjects();
-        this.bindEventForTargets();
-        this.showNextObject(this.index);
-      },
 
-      bindEventForTargets: function() {
+        this.objects = this.getUnmatchedObjects().reverse();
+
         this.getTargets().forEach(function(el, index){
-          el.addEventListener('click', this.onBucketTap.bind(this));
+          el.addEventListener('click', this.onTargetTap.bind(this));
         }, this);
+
+        this.showNextObject();
       },
 
       onChangeObject: function(event) {
@@ -95,50 +75,39 @@
       },
 
 
-      changeObject: function(obj) {
+      changeObject: function(object) {
         var targets = this.getTargets();
-        var oldBucket = obj.parentNode;
+        var oldBucket = object.parentNode;
 
-        if (!oldBucket) return;
+        if (!oldBucket || !targets || targets.length <= 1) return;
 
-        var peerBucket = targets.filter(function(e){
-          return e.getAttribute('name') != oldBucket.getAttribute('name');
-        })[0];
+        var index = targets.indexOf(oldBucket);
+        index = index+1 == targets.length ? 0 : index+1;
+        var peerBucket = targets[index];
 
-        peerBucket.appendChild(obj);
-        this.match(peerBucket, obj);
-        
+        this.match(peerBucket, object);
       },
 
-      onBucketTap: function(e) {
-
-        if ( this.index >= this.objects.length ) {
-          return;
-        }
-        console.log('onBucketTap', event.target, event.currentTarget);
-
+      onTargetTap: function(e) {
+        
+        console.log('onTargetTap', event.target, event.currentTarget);
         var bucket = e.currentTarget;
-        var object = this.objects[this.index];
+        var object = this.objects.pop();
+
+        if ( !object ) return;
 
         // add a small label onto the object, which is used to move the object over 
         // the targets
-        var changeLabel = document.createElement('i');
-        changeLabel.setAttribute('change', true);
-        changeLabel.textContent = '<>';
-        object.appendChild(changeLabel);
+        var changeButton = document.createElement('i');
+        changeButton.setAttribute('change', true);
+        changeButton.textContent = '<>';
+        object.appendChild(changeButton);
 
-        changeLabel.addEventListener('click', this.onChangeObject.bind(this), true);
+        changeButton.addEventListener('click', this.onChangeObject.bind(this), true);
         object.addEventListener('click', this.onMatchedObjectClick.bind(this));
-        if ( this.index < this.objects.length ) {
-          bucket.appendChild(object);
-          this.match(bucket, this.objects[this.index]);
-        }
-        this.index++;
-        this.showNextObject(this.index);
-
-        // if ( this.index >= this.objects.length ) {
-        //   this.unbindEvent();
-        // }
+        
+        this.match(bucket, object);
+        this.showNextObject();
         
       },
 
@@ -147,19 +116,14 @@
         event.stopPropagation();
       },
 
-      showNextObject: function(index) {
-        if (index < this.objects.length ) this.$.show.appendChild(this.objects[index]);
-        else this.$.show.innerHtml = '';
+      // 
+      showNextObject: function() {
+        if ( this.objects.length == 0 ) this.$.show.innerHtml = '';
+        else this.$.show.appendChild(this.objects[this.objects.length-1]);
       },
 
       onMatch: function(e) {
-
-        var isMatch = e.detail.isMatch;
-        var k = e.detail.from;
-        var v = e.detail.to;
-
         this.prettyPrint();
-        
       },
 
 
@@ -167,8 +131,13 @@
         return this.$.match.isMatch(k.getAttribute("name"), v.getAttribute("name"));
       },
 
-
+      /**
+       * @method match
+       * @param  {Object} k target
+       * @param  {Object} v object
+       */
       match: function(k, v) {
+        k.appendChild(v);
         this.$.match.match(k.getAttribute("name"), v.getAttribute("name"));
       },
 
@@ -206,11 +175,9 @@
       getTargets: function() {
         var targets = [];
         this.$.items.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.hasAttribute('targets') ) {
-            el.childNodes.array().filter(function(e) {
-              return e.nodeType == 1;
-            }).forEach(function(e){
-              e.hasAttribute('target') && targets.push(e);
+          if ( el.hasAttribute('targets') && el.childNodes ) {
+            el.childNodes.array().forEach(function(e){
+              e.nodeType == 1 && e.hasAttribute('target') && targets.push(e);
             });
           }
         });
@@ -218,47 +185,19 @@
       },
 
       /**
-       * Get all unmatched objects.
-       * @return {[type]} [description]
+       * @method getUnmatchedObjects Get all unmatched objects.
+       * @return {array} UnmatchedObjects
        */
       getUnmatchedObjects: function() {
         var objects = [];
         this.$.objects.getDistributedNodes().array().forEach(function(el, idx) {
           if ( el.hasAttribute('objects') ) {
-            el.childNodes.array().filter(function(e) {
-              return e.nodeType == 1;
-            }).forEach(function(e){
-              e.hasAttribute('object') && objects.push(e);
+            el.childNodes.array().forEach(function(e){
+              e.nodeType == 1 && e.hasAttribute('object') && objects.push(e);
             });
           }
         });
         return objects;
-
-      },
-
-      modeChanged: function() {
-        switch(this.mode) {
-          case "1-1":
-          case "single":
-            this.modeState = modes.SINGLE;
-            break;
-          case "1-n":
-          case "1-m":
-            this.modeState = modes.O2M;
-            break;
-          case "n-1":
-          case "m-1":
-            this.modeState = modes.M2O;
-            break;
-          case "m-n":
-          case "n-m":
-          case "multi":
-            this.modeState = modes.M2M;
-            break;
-          default:
-            this.modeState = SINGLE;
-            this.mode = '1-1';
-        }
 
       },
 
@@ -275,7 +214,7 @@
         // TODO
         console.log('unbindEvent');
         this.getTargets().forEach(function(el, index){
-          el.removeEventListener('click', this.onBucketTap.bind(this));
+          el.removeEventListener('click', this.onTargetTap.bind(this));
         }, this);
       },
 
