@@ -65,13 +65,8 @@
       interchangeable: true,
 
 
-      created: function() {
-        this.addEventListener('asq-match', this.onMatch, true);
-      },
-
       ready: function() {
         this.activateListener = this.onTargetTap.bind(this);
-        // this.itemFilter = this.filterItem.bind(this);
         this.targetObserver = new MutationObserver(this.updateTargets.bind(this));
         this.objectsObserver = new MutationObserver(this.updateObjects.bind(this));
 
@@ -218,6 +213,7 @@
       },
 
       onMatch: function(e) {
+        console.log('onMatch', e.detail.from, e.detail.to);
         var target = this.findTargetByAttribute(e.detail.from);
         var object = this.findObjecttByAttribute(e.detail.to);
 
@@ -246,10 +242,19 @@
        * @param  {Object} k target
        * @param  {Object} v object
        */
-      match: function(k, v) {
+      match: function(target, object) {
+
+        k =  typeof target === 'object' ? 
+            target.getAttribute(this.valueattr) : target;
+        v = typeof object === 'object' ? 
+            object.getAttribute(this.valueattr) : object;
+        
+        this.$.match.match(k, v);
         // k.appendChild(v);
-        this.$.match.match(k.getAttribute(this.valueattr), v.getAttribute(this.valueattr));
       },
+
+
+
 
       findTargetByAttribute: function(attr) {
 
