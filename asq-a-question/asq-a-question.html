@@ -62,6 +62,8 @@
 
       mode: '1-m',
 
+      interchangeable: true,
+
 
       created: function() {
         this.addEventListener('asq-match', this.onMatch, true);
@@ -75,6 +77,8 @@
 
         if (!this.targets) this.targets = this;
         if (!this.objects) this.objects = this;
+
+
       },
 
       updateTargets: function() {
@@ -90,6 +94,7 @@
 
       domReady: function() {
         this.showNextObject();
+        console.log('mos', this.$.match.modeState);
       },
 
       targetsChanged: function(old) {
@@ -163,24 +168,35 @@
         var target = e.currentTarget;
         var object = this.getCurrentObject();
         if ( !object ) return;          
-        console.log(e.currentTarget, e.target);
+
         // add a small label onto the object, which is used to move the object over 
         // the targets
-        var changeButton = document.createElement('i');
-        changeButton.setAttribute('change', true);
-        changeButton.textContent = '<>';
-        object.appendChild(changeButton);
-
-        Polymer.addEventListener(changeButton, this.activateEvent, this.onSwitchTarget.bind(this));
+        this.addSwitchTag(object);
+        
         Polymer.addEventListener(object, this.activateEvent, function(event) {
           event.stopPropagation();
         });
         
         this.match(target, object);
         this.showNextObject();
-
       },
 
+      addSwitchTag: function(object) {
+        var changeButton = document.createElement('i');
+        changeButton.setAttribute('change', true);
+        changeButton.textContent = '<>';
+        object.appendChild(changeButton);
+        Polymer.addEventListener(changeButton, this.activateEvent, this.onSwitchTarget.bind(this));
+      },
+
+      removeSwitchTag: function(object) {
+        object.childNodes.array().forEach(function(e) {
+          if ( e.nodeName == 'I' && e.hasAttribute('change')) {
+            Polymer.removeEventListener(e, this.activateEvent, this.onSwitchTarget.bind(this));
+            objects.removeChild(e);
+          }
+        }, this);
+      },
 
       getCurrentObject: function() {
         var objects = this.$.show.childNodes.array().filter(function(e) {
@@ -202,6 +218,20 @@
       },
 
       onMatch: function(e) {
+        var target = this.findTargetByAttribute(e.detail.from);
+        var object = this.findObjecttByAttribute(e.detail.to);
+
+        if ( !target || !object ) {
+          return
+        }
+        if ( e.detail.isMatch ) {
+          target.appendChild(object);
+        } else {
+          // if ( this.$.match.modeState == this.$.match.modes.SINGLE ) {
+          //   this.$.show.appendChild(object);
+          // }
+        }
+
         this.prettyPrint();
       },
 
@@ -217,8 +247,49 @@
        * @param  {Object} v object
        */
       match: function(k, v) {
-        k.appendChild(v);
+        // k.appendChild(v);
         this.$.match.match(k.getAttribute(this.valueattr), v.getAttribute(this.valueattr));
+      },
+
+      findTargetByAttribute: function(attr) {
+
+        for ( var target of this.getTargets() ) {
+          if ( target.getAttribute(this.valueattr) == attr) {
+            return target;
+          }
+        }
+        return null;
+      },
+
+      findObjecttByAttribute: function(attr) {
+
+        var object = this.getCurrentObject();
+        if ( object && object.getAttribute(this.valueattr) == attr) {
+          return object;
+        }
+
+        for ( var object of this.getUnmatchedObjects() ) {
+          if ( object.getAttribute(this.valueattr) == attr) {
+            return object;
+          }
+        }
+
+        for ( var target of this.getTargets() ) {
+          for ( var object of this.getMatchedObjectsOfTarget(target) ) {
+            if ( object.getAttribute(this.valueattr) == attr) {
+              return object;
+            }
+          }
+        }
+        return null;
+      },
+
+      getMatchedObjectsOfTarget: function(target) {
+        var objects = [];
+        target.childNodes.array().forEach(function(e) {
+          e.hasAttribute('object') && objects.push(e);
+        });
+        return objects;
       },
 
       getTargets: function() {
