@@ -31,10 +31,10 @@
 <body>
 
 <!-- <template is="auto-binding"> -->
-
+  <div id="ss">
   <asq-match id="m" mode="1-1"></asq-match>
   <p>hhhh
-
+  </div>
   <script>
 
     var f1 = '(from1)';
@@ -59,11 +59,20 @@
     // console.log(f1, x, m.getMatches(f1), m.getMatches());
     // m.match(f1, t2);
     // m.match(f2, t1);
+    var ss = document.querySelector('#ss');
+    ss.addEventListener('asq-match', function(e) {
+      // console.log('hi', e.detail.isMatch, e.detail.from, e.detail.to);
+      prettyPrint();
+    }, true);
 
-    document.addEventListener('asq-match', function(e) {
-        console.log('hi', e.detail.isMatch, e.detail.from, e.detail.to);
-    });
-
+    prettyPrint = function() {
+      var ms = m.getMatches();
+      console.log(' - - - - match', ms.length, ' - - - -');
+      ms.forEach(function(k, index){
+        console.log('  ', index, ' : ' , k.from, k.value);
+      });
+      console.log(' ');
+    }
 
     // m.match(f1, t1);
     
