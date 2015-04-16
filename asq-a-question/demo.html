@@ -3,7 +3,7 @@
 <head>
   <meta name="asq-elements" content="width=device-width, initial-scale=1, user-scalable=no">
 
-  <title>asq-a-question</title>
+  <title>Bucket questions</title>
 
   <script src="../../webcomponentsjs/webcomponents.js"></script>
 
@@ -117,23 +117,15 @@
     asq-a-question > [object] > b {
       color: red;
     }
-
-    asq-a-question {
-      height: auto;
-      width: auto;
-
-    }
-
-
-
   </style>
 
 </head>
 <body>
 
   <asq-exercise>
-    <asq-stem><h3>1-M</h3></asq-stem>
+    <asq-stem><h3>Ex 1-M</h3></asq-stem>
     <asq-a-question targets="#targets" objects="#objects">
+      <asq-stem><h5>Please classify the words according to the pronunciation of the bolded vowels</h5></asq-stem>
       <div id="targets">
         <div target name="Long"><span>Long</span></div>
         <div target name="Short"><span>Short</span></div>
@@ -148,9 +140,24 @@
     </asq-a-question>
   </asq-exercise>
 
-  <!-- <asq-exercise>
-    <asq-stem><h3>1-M</h3></asq-stem>
+  <asq-exercise>
+    <asq-stem><h3>Ex 1-1</h3></asq-stem>
+    <asq-a-question mode='1-1'>
+      <asq-stem><h5>Match the correct translations.</h5></asq-stem>
+      <div target name="Sunny"><b>It is Sunny</b></div>
+      <div target name="Windy"><b>It is Windy</b></div>
+      <div target name="Rainy"><b>It is Rainy</b></div>
+
+      <div object name="sonnig">Es ist sonnig</div>
+      <div object name="windig">Es ist windig</div>
+      <div object name="regnet">Es ist regnet</div>
+    </asq-a-question>
+  </asq-exercise> 
+
+  <asq-exercise>
+    <asq-stem><h3>Another Ex 1-M</h3></asq-stem>
     <asq-a-question>
+      <asq-stem><h5>Please classify the words according to the pronunciation of the bolded vowels</h5></asq-stem>
       <div target name="Long"><span>Long</span></div>
       <div target name="Short"><span>Short</span></div>
       <div target name="Medium"><span>Medium</span></div>
@@ -159,10 +166,9 @@
       <div object name="platz">Pl<b>a</b>tz</div>
       <div object name="vier">v<b>i</b>er</div>
     </asq-a-question>
-  </asq-exercise> -->
+  </asq-exercise>
 
-
-
+  <!-- For tests -->
   <div hidden>
     <div object name="k1">kkkkk</div>
     <div object name="f1">fffff</div>

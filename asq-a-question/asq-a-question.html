@@ -8,7 +8,7 @@
 ......
 
 ##### Example
-    <asq-a-question>
+    <asq-a-question >
       <div targets>
         <div target name="Long"><span>Long</span></div>
         <div target name="Short"><span>Short</span></div>
@@ -38,8 +38,8 @@
     </style>
     
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
-    
-    <wrapper ><content id="items" select="*" ></content></wrapper>
+    <content id="stem" select="asq-stem" ></content>
+    <wrapper><content id="items" select="*" ></content></wrapper>
     <section id="show"></section>
     
   </template>
@@ -72,8 +72,6 @@
 
         if (!this.targets) this.targets = this;
         if (!this.objects) this.objects = this;
-
-
       },
 
       updateTargets: function() {
@@ -89,7 +87,6 @@
 
       domReady: function() {
         this.showNextObject();
-        console.log('mos', this.$.match.modeState);
       },
 
       targetsChanged: function(old) {
@@ -123,7 +120,7 @@
         } 
         this.objectsObserver.observe(this.objects, {childList: true});
 
-        // hidden objects
+        // hide all object-s
         if ( this.objects == this ) {
           this.getUnmatchedObjects().forEach(function(element) {
             element.setAttribute('hidden', true);
@@ -146,7 +143,6 @@
         event.stopPropagation();
       },
 
-
       switchTarget: function(object) {
         var targets = this.getTargets();
         var oldTarget = object.parentNode;
@@ -166,7 +162,7 @@
 
         // add a small label onto the object, which is used to move the object over 
         // the targets
-        this.addSwitchTag(object);
+        if ( this.$.match.modeState != this.$.match.modes.SINGLE ) this.addSwitchTag(object);
         
         Polymer.addEventListener(object, this.activateEvent, function(event) {
           event.stopPropagation();
@@ -188,7 +184,7 @@
         object.childNodes.array().forEach(function(e) {
           if ( e.nodeName == 'I' && e.hasAttribute('change')) {
             Polymer.removeEventListener(e, this.activateEvent, this.onSwitchTarget.bind(this));
-            objects.removeChild(e);
+            object.removeChild(e);
           }
         }, this);
       },
@@ -213,9 +209,9 @@
       },
 
       onMatch: function(e) {
-        console.log('onMatch', e.detail.from, e.detail.to);
-        var target = this.findTargetByAttribute(e.detail.from);
-        var object = this.findObjecttByAttribute(e.detail.to);
+        console.log('onMatch', e.detail.key, e.detail.value, e.detail.isMatch);
+        var target = this.findTargetByAttribute(e.detail.key);
+        var object = this.findObjecttByAttribute(e.detail.value);
 
         if ( !target || !object ) {
           return
@@ -223,12 +219,20 @@
         if ( e.detail.isMatch ) {
           target.appendChild(object);
         } else {
-          // if ( this.$.match.modeState == this.$.match.modes.SINGLE ) {
-          //   this.$.show.appendChild(object);
-          // }
+          if ( this.$.match.modeState == this.$.match.modes.SINGLE ) {
+            this.putBackObject(object);
+          }
         }
 
         this.prettyPrint();
+      },
+
+      putBackObject: function(object) {
+        if ( this.targets == this ) {
+          object.hidden = true;
+        }
+        this.removeSwitchTag(object);
+        this.objects.appendChild(object);
       },
 
 
@@ -267,7 +271,6 @@
       },
 
       findObjecttByAttribute: function(attr) {
-
         var object = this.getCurrentObject();
         if ( object && object.getAttribute(this.valueattr) == attr) {
           return object;
@@ -319,12 +322,12 @@
       },
 
       prettyPrint: function() {
-        var ms = this.$.match.getMatches();
-        console.log(' - - - - match', ms.length, ' - - - -');
-        ms.forEach(function(k, index){
-          console.log('  ', index, ' : ' , k.from, k.value);
+        var matches = this.$.match.getMatches();
+        console.log('- - - - match', matches.length, ' - - - -');
+        matches.forEach(function(m, index){
+          console.log('  ', index, ' : ' , m.key, m.value);
         });
-        console.log(' ');
+        console.log('\n');
       },
 
       /**
