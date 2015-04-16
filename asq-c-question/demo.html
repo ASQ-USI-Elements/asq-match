@@ -97,7 +97,7 @@
 
   <asq-exercise>
     <asq-stem><h3>1-M</h3></asq-stem>
-    <asq-c-question>
+    <asq-c-question hints>
       <asq-stem><p>It is snowing and it is cold.</p></asq-stem>
       <img src="./cs1.png"></img>  
 
@@ -105,7 +105,16 @@
         <div target name="words" horizontal layout></div>
       </div>
 
+      <!-- presenter wants a specific order -->
       <div objects horizontal layout>
+        <div object order="3" name="schneit">schneit</div>
+        <div object order="1" name="und">und</div>
+        <div object order="2" name="kalt">kalt</div>
+        <div object order="2" name="es ist">es ist</div>
+      </div>
+
+      <!-- presenter wants random each time -->
+       <div objects horizontal layout>
         <div object name="schneit">schneit</div>
         <div object name="und">und</div>
         <div object name="kalt">kalt</div>
