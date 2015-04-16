@@ -22,16 +22,23 @@ It should be put it inside an element.
   (function() {
 
     /**
-     * All possible relationship modes.
+     * All possible relationship this.modes.
      */
-    var modes = {
-      SINGLE: "single",
-      O2M: "one_to_many",
-      M2O: "many_to_one",
-      M2M: 'many_to_many'
-    };
+    // var this.modes = {
+    //   SINGLE: "single",
+    //   O2M: "one_to_many",
+    //   M2O: "many_to_one",
+    //   M2M: 'many_to_many'
+    // };
 
     var proto = {
+
+      modes: {
+        SINGLE: "single",
+        O2M: "one_to_many",
+        M2O: "many_to_one",
+        M2M: 'many_to_many'
+      },
 
       /**
        * The relationsip mode.
@@ -42,9 +49,9 @@ It should be put it inside an element.
       mode: '',
 
       /**
-       * Represents the mode by modes enum attribute.
+       * Represents the mode by this.modes enum attribute.
        
-              modes = 
+              this.modes = 
               {
                 SINGLE: "single",
                 O2M: "one_to_many",
@@ -54,9 +61,9 @@ It should be put it inside an element.
        * 
        * @attribute modeState
        * @type {string}
-       * @default modes.SINGLE
+       * @default this.modes.SINGLE
        */
-      modeState: modes.SINGLE,
+      modeState: '',
 
       /**
        * The array that stores the matches. A match is
@@ -75,10 +82,10 @@ It should be put it inside an element.
 
       created: function() {
         this.mode = '1-1';
+        this.modeState = this.modes.SINGLE;
       },
 
       ready: function() {
-        
         this.clear();
       },
 
@@ -202,18 +209,18 @@ It should be put it inside an element.
           return;
         }
 
-        if ( this.modeState == modes.O2M  ) {
+        if ( this.modeState == this.modes.O2M  ) {
           if ( !this.isMatch(from, to) && this.countTo(to) > 0) {
             var xs = this.getFromsByTo(to);
             xs.forEach(function(e){ this.setMatched(e, to, false);}, this);
           } 
 
-        } else if (this.modeState == modes.M2O){
+        } else if (this.modeState == this.modes.M2O){
           if (this.existMatchesFrom(from) && !this.isMatch(from, to)) {
             this.setMatched(from, this.getMatches(from)[0], false);
           } 
 
-        } else if ( this.modeState == modes.SINGLE ) {
+        } else if ( this.modeState == this.modes.SINGLE ) {
           if ( ! this.isMatch(from, to) ) {
             if (this.existMatchesFrom(from) ) {
                 this.setMatched(from, this.getMatches(from)[0], false);
@@ -312,25 +319,25 @@ It should be put it inside an element.
         switch(this.mode) {
           case "1-1":
           case "single":
-            this.modeState = modes.SINGLE;
+            this.modeState = this.modes.SINGLE;
             break;
           case "1-n":
           case "1-m":
-            this.modeState = modes.O2M;
+            this.modeState = this.modes.O2M;
             break;
           case "n-1":
           case "m-1":
-            this.modeState = modes.M2O;
+            this.modeState = this.modes.M2O;
             break;
           case "m-n":
           case "n-m":
           case "n-n":
           case "m-m":
           case "multi":
-            this.modeState = modes.M2M;
+            this.modeState = this.modes.M2M;
             break;
           default:
-            this.modeState = SINGLE;
+            this.modeState = this.modes.SINGLE;
             this.mode = '1-1';
         } 
       },
