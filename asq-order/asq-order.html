@@ -8,7 +8,7 @@
 ......
 
 ##### Example
-    <asq-c-question id="aq">
+    <asq-order id="aq">
       <div id="labels">
         <asq-label name="big">A bigger hello.</asq-label>
         <asq-label name="small">A smaller hello.</asq-label>
@@ -20,14 +20,14 @@
         <asq-bucket id="b2" name="bucket_2"><img src="http://www.gmkfreelogos.com/logos/H/img/Hello_Design.gif" width="100px" alt="hi!"></asq-bucket>
       </div>
       
-    </asq-c-question>
+    </asq-order>
 
-@element asq-c-question
+@element asq-order
 @group ASQ Elements
 @blurb ...
 @homepage http://github.com/ASQ_USI/c-question
 -->
-<polymer-element name="asq-c-question" attributes="mode">
+<polymer-element name="asq-order" attributes="mode">
   <template>
     <style shim-shadowdom>
       :host {
@@ -215,7 +215,7 @@
     }
 
     ASQ.asqify(p, true);
-    Polymer('asq-c-question', p);
+    Polymer('asq-order', p);
 
   })();
   </script>
