@@ -8,7 +8,7 @@
   <script src="../../webcomponentsjs/webcomponents.js"></script>
 
   <link href="../../asq-exercise/asq-exercise.html" rel="import">
-  <link href="asq-a-question.html" rel="import">
+  <link href="asq-buckets.html" rel="import">
   
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -25,7 +25,7 @@
       -webkit-touch-callout: none;
     }
 
-    asq-a-question /deep/ [target] {
+    asq-buckets /deep/ [target] {
 
       padding: 4px;
       margin-bottom: 20px;
@@ -44,13 +44,13 @@
       justify-content: center;
     }
 
-    asq-a-question /deep/ wrapper{
+    asq-buckets /deep/ wrapper{
       display: flex;
       flex-direction: row;
       justify-content: center;
     }
 
-    asq-a-question /deep/ [target] {
+    asq-buckets /deep/ [target] {
       cursor: pointer;
       display: block;
       
@@ -59,7 +59,7 @@
 
     }
 
-    asq-a-question /deep/ [target] > [object] {
+    asq-buckets /deep/ [target] > [object] {
       cursor: default;
       display: flex;
       flex-direction: row;
@@ -67,11 +67,11 @@
       margin: 2px;
     }
 
-    asq-a-question /deep/ [target] > [object] > [change] {
+    asq-buckets /deep/ [target] > [object] > [change] {
       background-color: #FF6666;
     }
 
-    asq-a-question /deep/ [target] > span {
+    asq-buckets /deep/ [target] > span {
       color: #E6E6E6;
       background-color: #0080FF;
       border-color: #bce8f1;
@@ -84,13 +84,13 @@
 
     }
 
-    asq-exercise > asq-a-question {
+    asq-exercise > asq-buckets {
       max-width: 400px;
       text-align: center;
       max-width: 50px auto;
     }
 
-    asq-a-question /deep/ section {
+    asq-buckets /deep/ section {
       text-align: center;
     }
 
@@ -100,7 +100,7 @@
       width: 600px;
     }
 
-    asq-a-question /deep/ [object] {
+    asq-buckets /deep/ [object] {
       display: block;
       color: #a94442;
       background-color: #f2dede;
@@ -114,7 +114,7 @@
       margin: 1px auto;
     }
 
-    asq-a-question > [object] > b {
+    asq-buckets > [object] > b {
       color: red;
     }
   </style>
@@ -124,7 +124,7 @@
 
   <asq-exercise>
     <asq-stem><h3>Ex 1-M</h3></asq-stem>
-    <asq-a-question targets="#targets" objects="#objects">
+    <asq-buckets targets="#targets" objects="#objects">
       <asq-stem><h5>Please classify the words according to the pronunciation of the bolded vowels</h5></asq-stem>
       <div id="targets">
         <div target name="Long"><span>Long</span></div>
@@ -137,12 +137,12 @@
         <div object name="platz">Pl<b>a</b>tz</div>
         <div object name="vier">v<b>i</b>er</div>
       </div>
-    </asq-a-question>
+    </asq-buckets>
   </asq-exercise>
 
   <asq-exercise>
     <asq-stem><h3>Ex 1-1</h3></asq-stem>
-    <asq-a-question mode='1-1'>
+    <asq-buckets mode='1-1'>
       <asq-stem><h5>Match the correct translations.</h5></asq-stem>
       <div target name="Sunny"><b>It is Sunny</b></div>
       <div target name="Windy"><b>It is Windy</b></div>
@@ -151,12 +151,12 @@
       <div object name="sonnig">Es ist sonnig</div>
       <div object name="windig">Es ist windig</div>
       <div object name="regnet">Es ist regnet</div>
-    </asq-a-question>
+    </asq-buckets>
   </asq-exercise> 
 
   <asq-exercise>
     <asq-stem><h3>Another Ex 1-M</h3></asq-stem>
-    <asq-a-question>
+    <asq-buckets>
       <asq-stem><h5>Please classify the words according to the pronunciation of the bolded vowels</h5></asq-stem>
       <div target name="Long"><span>Long</span></div>
       <div target name="Short"><span>Short</span></div>
@@ -165,7 +165,7 @@
       <div object name="nudeln">N<b>u</b>deln</div>
       <div object name="platz">Pl<b>a</b>tz</div>
       <div object name="vier">v<b>i</b>er</div>
-    </asq-a-question>
+    </asq-buckets>
   </asq-exercise>
 
   <!-- For tests -->
@@ -176,7 +176,7 @@
     <div target name="e2"><span>NI</span></div>
   </div>
   <script>
-    var a = document.querySelector("asq-a-question")
+    var a = document.querySelector("asq-buckets")
     var o = a.querySelector("#objects");
     var t = a.querySelector("#targets");
 
