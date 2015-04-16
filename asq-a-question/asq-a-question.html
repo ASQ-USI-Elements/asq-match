@@ -39,7 +39,7 @@
     
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
     
-    <content id="items" select="*" ></content>
+    <wrapper ><content id="items" select="*" ></content></wrapper>
     <section id="show"></section>
     
   </template>
@@ -52,19 +52,15 @@
 
       valueattr: 'name',
 
-      // excludedLocalNames: '',
-
       targets: null,
+
       objects: null,
 
       itemsSelector: '',
 
       activateEvent: 'tap',
 
-      // defaultExcludedLocalNames: 'template',
-
       mode: '1-m',
-      // objects: [],
 
 
       created: function() {
@@ -74,84 +70,89 @@
       ready: function() {
         this.activateListener = this.onTargetTap.bind(this);
         // this.itemFilter = this.filterItem.bind(this);
-        this.observer = new MutationObserver(this.update.bind(this));
+        this.targetObserver = new MutationObserver(this.updateTargets.bind(this));
+        this.objectsObserver = new MutationObserver(this.updateObjects.bind(this));
+
+        if (!this.targets) this.targets = this;
+        if (!this.objects) this.objects = this;
       },
 
-      update: function() {
-
+      updateTargets: function() {
+        for (var x of this.getTargets()) {
+          this.removeListener(x);
+          this.addListener(x);
+        }
       },
 
-      filterItem: function(node) {
-        return !this._excludedNames[node.localName];
+      updateObjects: function() {
+        ! this.getCurrentObject() && this.showNextObject();
       },
 
       domReady: function() {
-        this.unmathcedObjects = this.getUnmatchedObjects();
-        // this.getTargets().forEach(function(el, index){
-        //   el.addEventListener('click', this.onTargetTap.bind(this));
-        // }, this);
         this.showNextObject();
       },
 
-      targetsChanged: function(old, news) {
+      targetsChanged: function(old) {
         if (old && typeof old === "object") {
           this.removeListener(old);
-          this.observer.disconnect();
+          this.targetObserver.disconnect();
         }
-        if (this.targets && typeof this.targets === "string") {
+        if (!this.targets) this.targets = this;
+        if ( typeof this.targets === "string" ) {
           var targets = this.parentNode.querySelector(this.targets);
-          if ( targets ) {
-            this.targets = targets;
-            this.observer.observe(this.targets, {childList: true});
-            for (var x of this.getTargets()) {
-              // this.addListener(x);
-              x.addEventListener('click', this.onTargetTap.bind(this));
-            }
-          }
-        } else {
-          // this.observer.observe(this.targets, {childList: true});
-          // this.addListener(this.targets);
+          if ( targets ) this.targets = targets;
+          else this.targets = this;
+        } 
+        this.targetObserver.observe(this.targets, {childList: true});
+        for (var x of this.getTargets()) {
+          this.addListener(x);
         }
       },
 
       objectsChanged: function(old) {
         if (old && typeof old === "object") {
           this.removeListener(old);
-          this.observer.disconnect();
+          this.objectsObserver.disconnect();
         }
-        if (this.objects && typeof this.objects === "string") {
+        if (!this.objects) this.objects = this;
+        if ( typeof this.objects === "string") {
           var objects = this.parentNode.querySelector(this.objects);
-          if ( objects ) {
-            this.objects = objects;
-            this.observer.observe(this.objects, {childList: true});
-          }
+
+          if ( objects ) this.objects = objects;
+          else this.objects = this;
+        } 
+        this.objectsObserver.observe(this.objects, {childList: true});
+
+        // hidden objects
+        if ( this.objects == this ) {
+          this.getUnmatchedObjects().forEach(function(element) {
+            element.setAttribute('hidden', true);
+          });
         } else {
-          this.observer.observe(this.objects, {childList: true});
+          this.objects.setAttribute('hidden', true);
         }
       },
 
       addListener: function(node) {
-        Polymer.addEventListener(node, this.activateEvent, this.activateListener, true);
+        Polymer.addEventListener(node, this.activateEvent, this.activateListener);
       },
 
       removeListener: function(node) {
-        console.log('sss', node);
         Polymer.removeEventListener(node, this.activateEvent, this.activateListener);
       },
 
-      onChangeObject: function(event) {
-        console.log('onChangeObject', event.target);
-        this.changeObject(event.target.parentNode);
+      onSwitchTarget: function(event) {
+        this.switchTarget(event.target.parentNode);
         event.stopPropagation();
       },
 
 
-      changeObject: function(object) {
+      switchTarget: function(object) {
         var targets = this.getTargets();
-        var oldBucket = object.parentNode;
-        if (!oldBucket || !targets || targets.length <= 1) return;
+        var oldTarget = object.parentNode;
+        if (!oldTarget || !targets || targets.length <= 1) return;
 
-        var index = targets.indexOf(oldBucket);
+        var index = targets.indexOf(oldTarget);
         index = index+1 == targets.length ? 0 : index+1;
         var peerBucket = targets[index];
 
@@ -160,8 +161,8 @@
 
       onTargetTap: function(e) {
         var target = e.currentTarget;
-        var object = this.getCurrentTarget();
-        if ( !object ) return;
+        var object = this.getCurrentObject();
+        if ( !object ) return;          
         console.log(e.currentTarget, e.target);
         // add a small label onto the object, which is used to move the object over 
         // the targets
@@ -170,27 +171,22 @@
         changeButton.textContent = '<>';
         object.appendChild(changeButton);
 
-        changeButton.addEventListener('click', this.onChangeObject.bind(this), true);
-        object.addEventListener('click', this.onMatchedObjectClick.bind(this));
+        Polymer.addEventListener(changeButton, this.activateEvent, this.onSwitchTarget.bind(this));
+        Polymer.addEventListener(object, this.activateEvent, function(event) {
+          event.stopPropagation();
+        });
         
         this.match(target, object);
         this.showNextObject();
+
       },
 
 
-
-      onMatchedObjectClick: function(event) {
-        console.log('onChange', event);
-
-        event.stopPropagation();
-      },
-
-
-      getCurrentTarget: function() {
-        var targets = this.$.show.childNodes.array().filter(function(e) {
+      getCurrentObject: function() {
+        var objects = this.$.show.childNodes.array().filter(function(e) {
             return e.nodeType == 1 && e.hasAttribute('object');
         });
-        if ( targets.length > 0 ) return targets[0];
+        if ( objects.length > 0 ) return objects[0];
         else return null;
       },
 
@@ -198,16 +194,21 @@
       showNextObject: function() {
         var objects = this.getUnmatchedObjects();
         if ( objects.length == 0 ) this.$.show.innerHtml = '';
-        else this.$.show.appendChild(objects.pop());
+        else {
+          var object = objects.pop();
+          object.hidden = false;
+          this.$.show.appendChild(object);
+        }
       },
 
       onMatch: function(e) {
-        // this.prettyPrint();
+        this.prettyPrint();
       },
 
 
       isMatch: function(k, v) {
-        return this.$.match.isMatch(k.getAttribute("name"), v.getAttribute("name"));
+        return this.$.match.isMatch(k.getAttribute(this.valueattr), 
+          v.getAttribute(this.valueattr));
       },
 
       /**
@@ -217,40 +218,8 @@
        */
       match: function(k, v) {
         k.appendChild(v);
-        this.$.match.match(k.getAttribute("name"), v.getAttribute("name"));
+        this.$.match.match(k.getAttribute(this.valueattr), v.getAttribute(this.valueattr));
       },
-
-
-
-
-      /**
-       * The `submit` method returns an object that respresents the submission of this question. The object has the following structure:
-
-           {
-              questionUid: this.uid, 
-              timestamp: new Date(),
-
-              // Array of the result of submit() called for each option of the question
-              submission: [] 
-           }
-       * Only enabled when the `role` of the element is <b>viewer</b>.
-       *
-       * @method submit
-       */
-      submit: function() {
-        if ( this.role !== this.roles.VIEWER ) {
-          return;
-        }
-
-        var submission = this.$.match.getMatches();
-
-        return {
-          questionUid: this.uid,
-          timestamp: new Date(),
-          submission: submission
-        };
-      },
-
 
       getTargets: function() {
         var targets = [];
@@ -282,13 +251,33 @@
         console.log(' ');
       },
 
-      unbindEvent: function() {
-        // TODO
-        console.log('unbindEvent');
-        this.getTargets().forEach(function(el, index){
-          el.removeEventListener('click', this.onTargetTap.bind(this));
-        }, this);
-      },
+      /**
+       * The `submit` method returns an object that respresents the submission of this question. The object has the following structure:
+
+           {
+              questionUid: this.uid, 
+              timestamp: new Date(),
+
+              // Array of the result of submit() called for each option of the question
+              submission: [] 
+           }
+       * Only enabled when the `role` of the element is <b>viewer</b>.
+       *
+       * @method submit
+       */
+      submit: function() {
+        if ( this.role !== this.roles.VIEWER ) {
+          return;
+        }
+
+        var submission = this.$.match.getMatches();
+
+        return {
+          questionUid: this.uid,
+          timestamp: new Date(),
+          submission: submission
+        };
+      }
 
     }
 

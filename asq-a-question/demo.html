@@ -25,7 +25,7 @@
       -webkit-touch-callout: none;
     }
 
-    [target] {
+    asq-a-question /deep/ [target] {
 
       padding: 4px;
       margin-bottom: 20px;
@@ -44,7 +44,13 @@
       justify-content: center;
     }
 
-    [target] {
+    asq-a-question /deep/ wrapper{
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    asq-a-question /deep/ [target] {
       cursor: pointer;
       display: block;
       
@@ -53,7 +59,7 @@
 
     }
 
-    [target] > [object] {
+    asq-a-question /deep/ [target] > [object] {
       cursor: default;
       display: flex;
       flex-direction: row;
@@ -61,11 +67,11 @@
       margin: 2px;
     }
 
-    [target] > [object] > [change] {
+    asq-a-question /deep/ [target] > [object] > [change] {
       background-color: #FF6666;
     }
 
-    [target] > span {
+    asq-a-question /deep/ [target] > span {
       color: #E6E6E6;
       background-color: #0080FF;
       border-color: #bce8f1;
@@ -133,7 +139,7 @@
         <div target name="Short"><span>Short</span></div>
         <div target name="Medium"><span>Medium</span></div>
       </div>
-      <div id="objects" hidden>
+      <div id="objects">
         <div object name="glas">Gl<b>a</b>s</div>
         <div object name="nudeln">N<b>u</b>deln</div>
         <div object name="platz">Pl<b>a</b>tz</div>
@@ -145,24 +151,33 @@
   <!-- <asq-exercise>
     <asq-stem><h3>1-M</h3></asq-stem>
     <asq-a-question>
-      <div targets>
-        <div target name="Long"><span>Long</span></div>
-        <div target name="Short"><span>Short</span></div>
-        <div target name="Medium"><span>Medium</span></div>
-      </div>
-      <div objects>
-        <div object name="glas">Gl<b>a</b>s</div>
-        <div object name="nudeln">N<b>u</b>deln</div>
-        <div object name="platz">Pl<b>a</b>tz</div>
-        <div object name="vier">v<b>i</b>er</div>
-      </div>
+      <div target name="Long"><span>Long</span></div>
+      <div target name="Short"><span>Short</span></div>
+      <div target name="Medium"><span>Medium</span></div>
+      <div object name="glas">Gl<b>a</b>s</div>
+      <div object name="nudeln">N<b>u</b>deln</div>
+      <div object name="platz">Pl<b>a</b>tz</div>
+      <div object name="vier">v<b>i</b>er</div>
     </asq-a-question>
   </asq-exercise> -->
 
 
-  <ghouan>HI</ghouan>
+
+  <div hidden>
+    <div object name="k1">kkkkk</div>
+    <div object name="f1">fffff</div>
+    <div target name="e1"><span>HI</span></div>
+    <div target name="e2"><span>NI</span></div>
+  </div>
   <script>
     var a = document.querySelector("asq-a-question")
+    var o = a.querySelector("#objects");
+    var t = a.querySelector("#targets");
+
+    var k = document.querySelector("[name=k1]")
+    var f = document.querySelector("[name=f1]")
+    var e1 = document.querySelector("[name=e1]")
+    var e2 = document.querySelector("[name=e2]")
   </script>
 </body>
 </html>
