@@ -38,7 +38,7 @@
               transition: border .2s ease-in-out;
 
     }
-    [targets] {
+    div#targets {
       display: flex;
       flex-direction: row;
       justify-content: center;
@@ -118,7 +118,7 @@
 
     }
 
-  
+
 
   </style>
 
@@ -127,12 +127,13 @@
 
   <asq-exercise>
     <asq-stem><h3>1-M</h3></asq-stem>
-    <asq-a-question>
-      <div targets>
+    <asq-a-question targets="#targets" objects="#objects">
+      <div id="targets">
         <div target name="Long"><span>Long</span></div>
         <div target name="Short"><span>Short</span></div>
+        <div target name="Medium"><span>Medium</span></div>
       </div>
-      <div objects>
+      <div id="objects" hidden>
         <div object name="glas">Gl<b>a</b>s</div>
         <div object name="nudeln">N<b>u</b>deln</div>
         <div object name="platz">Pl<b>a</b>tz</div>
@@ -141,10 +142,27 @@
     </asq-a-question>
   </asq-exercise>
 
+  <!-- <asq-exercise>
+    <asq-stem><h3>1-M</h3></asq-stem>
+    <asq-a-question>
+      <div targets>
+        <div target name="Long"><span>Long</span></div>
+        <div target name="Short"><span>Short</span></div>
+        <div target name="Medium"><span>Medium</span></div>
+      </div>
+      <div objects>
+        <div object name="glas">Gl<b>a</b>s</div>
+        <div object name="nudeln">N<b>u</b>deln</div>
+        <div object name="platz">Pl<b>a</b>tz</div>
+        <div object name="vier">v<b>i</b>er</div>
+      </div>
+    </asq-a-question>
+  </asq-exercise> -->
+
 
   <ghouan>HI</ghouan>
   <script>
-
+    var a = document.querySelector("asq-a-question")
   </script>
 </body>
 </html>

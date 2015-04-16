@@ -27,7 +27,7 @@
 @blurb ...
 @homepage http://github.com/ASQ_USI/a-question
 -->
-<polymer-element name="asq-a-question" attributes="mode target interchangeable">
+<polymer-element name="asq-a-question" attributes="mode targets objects interchangeable">
   <template>
     <style>
     section#show {
@@ -36,10 +36,10 @@
       text-align: center;
     }
     </style>
-
+    
     <asq-match id="match" mode="{{mode}}" on-asq-match="{{onMatch}}"></asq-match>
-    <section><content id="items" select="[targets]"></content></section>
-    <section hidden><content id="objects" select="[objects]"></content></section>
+    
+    <content id="items" select="*" ></content>
     <section id="show"></section>
     
   </template>
@@ -50,22 +50,93 @@
 
     var p = {
 
+      valueattr: 'name',
+
+      // excludedLocalNames: '',
+
+      targets: null,
+      objects: null,
+
+      itemsSelector: '',
+
+      activateEvent: 'tap',
+
+      // defaultExcludedLocalNames: 'template',
+
       mode: '1-m',
-      objects: [],
+      // objects: [],
+
 
       created: function() {
         this.addEventListener('asq-match', this.onMatch, true);
       },
 
+      ready: function() {
+        this.activateListener = this.onTargetTap.bind(this);
+        // this.itemFilter = this.filterItem.bind(this);
+        this.observer = new MutationObserver(this.update.bind(this));
+      },
+
+      update: function() {
+
+      },
+
+      filterItem: function(node) {
+        return !this._excludedNames[node.localName];
+      },
+
       domReady: function() {
-
-        this.objects = this.getUnmatchedObjects().reverse();
-
-        this.getTargets().forEach(function(el, index){
-          el.addEventListener('click', this.onTargetTap.bind(this));
-        }, this);
-
+        this.unmathcedObjects = this.getUnmatchedObjects();
+        // this.getTargets().forEach(function(el, index){
+        //   el.addEventListener('click', this.onTargetTap.bind(this));
+        // }, this);
         this.showNextObject();
+      },
+
+      targetsChanged: function(old, news) {
+        if (old && typeof old === "object") {
+          this.removeListener(old);
+          this.observer.disconnect();
+        }
+        if (this.targets && typeof this.targets === "string") {
+          var targets = this.parentNode.querySelector(this.targets);
+          if ( targets ) {
+            this.targets = targets;
+            this.observer.observe(this.targets, {childList: true});
+            for (var x of this.getTargets()) {
+              // this.addListener(x);
+              x.addEventListener('click', this.onTargetTap.bind(this));
+            }
+          }
+        } else {
+          // this.observer.observe(this.targets, {childList: true});
+          // this.addListener(this.targets);
+        }
+      },
+
+      objectsChanged: function(old) {
+        if (old && typeof old === "object") {
+          this.removeListener(old);
+          this.observer.disconnect();
+        }
+        if (this.objects && typeof this.objects === "string") {
+          var objects = this.parentNode.querySelector(this.objects);
+          if ( objects ) {
+            this.objects = objects;
+            this.observer.observe(this.objects, {childList: true});
+          }
+        } else {
+          this.observer.observe(this.objects, {childList: true});
+        }
+      },
+
+      addListener: function(node) {
+        Polymer.addEventListener(node, this.activateEvent, this.activateListener, true);
+      },
+
+      removeListener: function(node) {
+        console.log('sss', node);
+        Polymer.removeEventListener(node, this.activateEvent, this.activateListener);
       },
 
       onChangeObject: function(event) {
@@ -78,7 +149,6 @@
       changeObject: function(object) {
         var targets = this.getTargets();
         var oldBucket = object.parentNode;
-
         if (!oldBucket || !targets || targets.length <= 1) return;
 
         var index = targets.indexOf(oldBucket);
@@ -89,13 +159,10 @@
       },
 
       onTargetTap: function(e) {
-        
-        console.log('onTargetTap', event.target, event.currentTarget);
-        var bucket = e.currentTarget;
-        var object = this.objects.pop();
-
+        var target = e.currentTarget;
+        var object = this.getCurrentTarget();
         if ( !object ) return;
-
+        console.log(e.currentTarget, e.target);
         // add a small label onto the object, which is used to move the object over 
         // the targets
         var changeButton = document.createElement('i');
@@ -106,24 +173,36 @@
         changeButton.addEventListener('click', this.onChangeObject.bind(this), true);
         object.addEventListener('click', this.onMatchedObjectClick.bind(this));
         
-        this.match(bucket, object);
+        this.match(target, object);
         this.showNextObject();
-        
       },
 
+
+
       onMatchedObjectClick: function(event) {
-        console.log('onChange', event.target);
+        console.log('onChange', event);
+
         event.stopPropagation();
+      },
+
+
+      getCurrentTarget: function() {
+        var targets = this.$.show.childNodes.array().filter(function(e) {
+            return e.nodeType == 1 && e.hasAttribute('object');
+        });
+        if ( targets.length > 0 ) return targets[0];
+        else return null;
       },
 
       // 
       showNextObject: function() {
-        if ( this.objects.length == 0 ) this.$.show.innerHtml = '';
-        else this.$.show.appendChild(this.objects[this.objects.length-1]);
+        var objects = this.getUnmatchedObjects();
+        if ( objects.length == 0 ) this.$.show.innerHtml = '';
+        else this.$.show.appendChild(objects.pop());
       },
 
       onMatch: function(e) {
-        this.prettyPrint();
+        // this.prettyPrint();
       },
 
 
@@ -140,6 +219,7 @@
         k.appendChild(v);
         this.$.match.match(k.getAttribute("name"), v.getAttribute("name"));
       },
+
 
 
 
@@ -174,12 +254,8 @@
 
       getTargets: function() {
         var targets = [];
-        this.$.items.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.hasAttribute('targets') && el.childNodes ) {
-            el.childNodes.array().forEach(function(e){
-              e.nodeType == 1 && e.hasAttribute('target') && targets.push(e);
-            });
-          }
+        this.targets.childNodes.array().forEach(function(e) {
+          e.nodeType == 1 && e.hasAttribute('target') && targets.push(e);
         });
         return targets;
       },
@@ -190,14 +266,10 @@
        */
       getUnmatchedObjects: function() {
         var objects = [];
-        this.$.objects.getDistributedNodes().array().forEach(function(el, idx) {
-          if ( el.hasAttribute('objects') ) {
-            el.childNodes.array().forEach(function(e){
-              e.nodeType == 1 && e.hasAttribute('object') && objects.push(e);
-            });
-          }
+        this.objects.childNodes.array().forEach(function(e) {
+            e.nodeType == 1 && e.hasAttribute('object') && objects.push(e);
         });
-        return objects;
+        return objects.reverse();
 
       },
 
