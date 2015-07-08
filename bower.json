@@ -1,12 +1,12 @@
 {
   "name": "asq-match",
   "version": "0.1.0",
-  "homepage": "https://github.com/ASQ-USI/asq-match",
+  "homepage": "https://github.com/ASQ-USI-Elements/asq-match",
   "authors": [
     "Vasileios Triglianos <triglian@gmail.com>",
-    "Zhenfei Nie <zhenfei.nie@gmail.com>"
+    "Zhenfei Nie <youyis2fox@gmail.com>"
   ],
-  "description": "ASQ match",
+  "description": "ASQ match element.",
   "keywords": [
     "ASQ"
   ],
