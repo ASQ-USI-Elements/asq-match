@@ -24,7 +24,7 @@
        *
        * @type {Object}
        */
-      matchedItem: {
+      matches: {
         type: Object,
         readOnly: true,
         notify: true
@@ -212,7 +212,7 @@
         this._yValueToItem(y).setAttribute(this.matchedAttribute, yFlag); 
       }
 
-
+      this._setMatches(this._match.x);
       this.fire('asq-matched', {x: x, y: y, isMatched: this.isMatched(x, y)});
     },
 
