@@ -219,7 +219,6 @@
     _modeChanged: function(newMode, oldMode) {
       this._parseMode(this.mode);
       this.fire('new-mode-applied', {mode: this.mode});
-      console.log('mode changed from %s to %s. xMax %d; yMax: %d', oldMode, newMode, this._match.xMax, this._match.yMax);
     },
 
     _parseMode: function(mode) {
