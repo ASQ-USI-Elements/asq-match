@@ -1,12 +1,12 @@
 {
-  "name": "asq-match",
+  "name": "asq-matchable-behavior",
   "version": "0.2.0",
-  "homepage": "https://github.com/ASQ-USI-Elements/asq-match",
+  "homepage": "https://github.com/ASQ-USI-Elements/asq-matchable-behavior",
   "authors": [
     "Vasileios Triglianos <triglian@gmail.com>",
     "Zhenfei Nie <youyis2fox@gmail.com>"
   ],
-  "description": "ASQ match element.",
+  "description": "Matchable behaviors.",
   "keywords": [
     "ASQ"
   ],
