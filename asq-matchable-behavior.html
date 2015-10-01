@@ -26,8 +26,7 @@
        */
       matches: {
         type: Object,
-        readOnly: true,
-        notify: true
+        readOnly: true
       },
 
 
@@ -95,6 +94,73 @@
         notify: true,
         reflectToAttribute: true,
         observer: '_modeChanged'
+      },
+
+      /**
+       * This property is used to specify the matches through a valid 
+       * JSON format string, which is exactlly the stringify string of
+       * `matches`, i.e. JSON.stringify(matches). An example is 
+       * like follows.
+       *
+       *      x.value='{"Europe":["New York"],"North America":["Jerusalem"],"Middle East":["Lugano"]}'
+       */
+      value: {
+        type: String,
+        value: '{}',
+        observer: '_valueChanged'
+      }
+    },
+
+    /**
+     * This property is used to stop the change of value when
+     * the `matches` changes. It is useful when the matches are specified
+     * by the `value` attribute, e.g. `x.value='{"Europe":["New York"],"North America":["Jerusalem"],"Middle East":["Lugano"]}'`. 
+     *
+     * In this case, by setting `_stopCascading` to true before really performing the changes to prevent the infinite recursion.
+     * 
+     * @default false
+     * @type {Boolean}
+     */
+    _stopCascading: false,
+
+    _validateDeeply: function(value) {
+      if (!value || typeof value !== 'string' || value.length === 0) 
+        return false;
+
+      var matches = JSON.parse(value);
+      var keys = Object.keys(matches);
+
+      for ( var i in keys ) {
+        var x = keys[i];
+        if ( matches[x].length > this._match.yMax ) {
+          return false;
+        }
+
+        for ( var j in matches[x] ) {
+          var y = matches[x][j];
+          this._validateValues(x, y);
+        }
+      }
+      return true;
+    },
+
+    _valueChanged: function(newValue, oldValue) {
+      if ( JSON.stringify(this.matches) !== newValue ) {
+        if ( !this._validateDeeply(newValue) ) {
+          this.value = oldValue;
+        } else {
+          this._stopCascading = true;
+
+          this._match.clear();
+          var matches = JSON.parse(newValue);
+          Object.keys(matches).forEach(function(x) {
+            matches[x].forEach(function(y){
+              this.match(x, y);
+            }, this);
+          }, this);
+
+          this._stopCascading = false;
+        }
       }
     },
 
@@ -176,6 +242,9 @@
       this._match.match(xValue, yValue);
     },
 
+    clear: function() {
+      this._match.clear();
+    },
 
     _xValueToItem: function(value) {
       for (var i = 0, item; item = this.xItems[i]; i++) {
@@ -213,6 +282,10 @@
       }
 
       this._setMatches(this._match.x);
+      if ( ! this._stopCascading ) {
+        this.value = JSON.stringify(this.matches);
+      }
+      
       this.fire('asq-matched', {x: x, y: y, isMatched: this.isMatched(x, y)});
     },
 
