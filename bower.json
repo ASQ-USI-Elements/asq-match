@@ -12,7 +12,7 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "polymer": "Polymer/Polymer#~1.1.2",
+    "polymer": "Polymer/Polymer#~1.2.1",
     "asq-base": "ASQ-USI-Elements/asq-base#master"
   },
   "ignore": [ "index.js", "lib", "package.json", "node_modules", ".npmignore", "test/server"],
