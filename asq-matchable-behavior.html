@@ -129,7 +129,7 @@
 
       var matches = JSON.parse(value);
       
-      // the string we parsed can still be null or undefined
+      // the string we parsed can still be null or 'null'
       if(!matches) return false;
 
       var keys = Object.keys(matches);
