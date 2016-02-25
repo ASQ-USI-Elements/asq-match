@@ -127,7 +127,12 @@
       if (!value || typeof value !== 'string' || value.length === 0) 
         return false;
 
-      var matches = JSON.parse(value);
+      var matches = null;
+      try {
+        matches = JSON.parse(value);
+      } catch (err) {
+        return false;
+      }
       
       // the string we parsed can still be null or 'null'
       if(!matches) return false;
@@ -156,6 +161,8 @@
           this._stopCascading = true;
 
           this._match.clear();
+          // no need to use try/catch here since we know
+          // `newValue` should be a valid JSON string
           var matches = JSON.parse(newValue);
           Object.keys(matches).forEach(function(x) {
             matches[x].forEach(function(y){
